@@ -6,14 +6,15 @@
  *executeQuery() : This method is used to retrieve data from database using SELECT query. 
  *This method returns the ResultSet object that returns the data according to the query.
  */
-
+/*
+ * grading system:
+ * A:10, A-:9, B:8, B-:7, C:6, C-:5, D:4, F:0
+ * CGPA=(summation(f(grade)*credit))/(total credit)
+ * Exclude credit contribution by 'F' grade
+ */
 package softwareproject;
 import java.sql.*;
-// import java.sql.Connection;
-// import java.sql.Statement;
-// import java.sql.DriverManager;
-// import java.sql.ResultSet;
-// import java.sql.SQLException;
+import java.util.*;
 
 public class App {
     
@@ -34,23 +35,103 @@ public class App {
     public static void main(String[] args) {
         App app= new App();
         Connection conn = app.connect();
-        try {
-            Statement statement = conn.createStatement();
-            String query="SELECT * FROM t";
-            ResultSet rs = statement.executeQuery(query);
-            ResultSetMetaData resultSetMetaData = rs.getMetaData(); 
-            System.out.println("Table name: "+resultSetMetaData.getTableName(1));
-            System.out.println("Column name: "+resultSetMetaData.getColumnName(1));
-            System.out.println("Column type: "+resultSetMetaData.getColumnTypeName(1));
-            System.out.println();
+        while(true){
+          System.out.println("Welcome user!!");
+          System.out.println("Press 1. for Login");
+          System.out.println("Press 2. for Exit");
+          Scanner scn = new Scanner(System.in);
+          String input = scn.nextLine();
+            // scn.nextLine();
+            if(input.equals("1")){
+              System.out.println("Enter Email");
+              String email = scn.nextLine();
+              System.out.println("Enter Password");
+              String pass = scn.nextLine();
+            //   scn.close();
+              try {
+                  Statement statement = conn.createStatement();
+                  String query = "SELECT * FROM users WHERE email_id='"+email+"' AND password='"+pass+"' ";
+                  ResultSet rs = statement.executeQuery(query);
+                //   ResultSetMetaData rsmd = rs.getMetaData();
+                  if(rs.next()){   
+                    //   System.out.println((rs.getString(1)));
+                    //   System.out.println((rs.getString(2)));
+                      String name=rs.getString(2);
+                      String role=rs.getString(4);
 
-            while(rs.next()){
-                System.out.println(rs.getString(1));
+                      if(role.equals("s")){
+                        Student s = new Student(name,email,conn);
+                        s.log(0);
+                        System.out.println("Welcome "+name);
+                        while(true){
+                            input=s.display(scn);
+                            if(input.equals("1")){
+                                if(s.check_elgible_for_enrolling()==true){
+                                    System.out.println("Enter course_code");
+                                    String course_code = scn.nextLine();
+                                    System.out.println("Enter instructor_id");
+                                    String instructor_id = scn.nextLine();
+                                    String check[]=s.check_offered_or_not(course_code,instructor_id);
+                                    if(check[0].equals("true")){
+                                        System.out.println("enter");
+                                        if(s.calc_CGPA()>=0){
+                                            System.out.println("yep");
+                                            String[] result=s.current_session();
+                                            System.out.println("--------");
+                                            System.out.println(result[0]);
+                                            System.out.println(result[1]);
+                                            boolean check_previous=s.check_previous(result[0], result[1]);
+                                            boolean check_back_previous=s.check_back_previous(result[0], result[1]);
+
+                                        if(check_back_previous==true && check_previous==true){
+                                            System.out.println("prev exist");
+                                        }else{
+                                            // System.out.println("prev don't exit");
+
+                                        }
+                                        }else{
+                                            System.out.println("Not fulfilling CGPA criteria");
+                                        }
+                                        
+                                    }else{
+                                        System.out.println("Course not offered");
+                                    }
+
+                                }else{
+                                    System.out.println("Not elligible for enrolling");
+                                }
+
+                            }else if(input.equals("2")){
+                                
+                            }else if(input.equals("3")){
+                    
+                            }else if(input.equals("4")){
+                    
+                            }else if(input.equals("5")){
+                    
+                            }else{
+                                s.log(1);
+                                break;
+                            }
+                        } 
+                      }else if(role.equals("i")){
+
+                      }else{
+                      }
+                    //   System.exit(0);
+                  }else{
+                      System.out.println("Credential invalid");
+                    //   continue;
+                  }
+  
+              } catch (SQLException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+              }
+  
+            }else{
+              System.exit(0);
             }
-            
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 }

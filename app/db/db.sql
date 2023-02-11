@@ -1,5 +1,13 @@
-CREATE TABLE currernt_sessions(
-    academic_year VARCHAR(255) NOT NULL,
+-- Assumptions
+-- In one semester, two instructor will not teach the same course
+-- All PC course for student in that semester get enrolled automatically
+-- Session will start from the first half i.e first half will contain odd semester and second half of year will contain even semester
+-- As student request for enrolling in a course, it get also stored in course_record table of that particular course_code & instructor_id
+-- As the session changes, admin will enroll all the courses of student who got 'F' in the previous semester if that course being floated this semester 
+-- For checking whether elligible to graduate or not, just count total credits completed and whether completed BTP or not
+
+CREATE TABLE current_sessions(
+    academic_year INTEGER NOT NULL,
     semester INTEGER NOT NULL,
     PRIMARY KEY(academic_year,semester)
 );
@@ -17,21 +25,39 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER update_sessions
+CREATE TRIGGER update_sessions_deleate_offerings
 AFTER UPDATE ON currernt_sessions
 FOR EACH row
   EXECUTE PROCEDURE deleate_offerings();
 -- As the academic_year or semester changes, all entries of course_offering should be deleated using the above triggers,
 -- then all the course_record table would be deleated using triggers
-INSERT INTO currernt_sessions (academic_year,semester)
-VALUES ('2023',1);
--- UPDATE currernt_sessions SET semester=2;
+INSERT INTO current_sessions (academic_year,semester)
+VALUES (2023,1);
+-- UPDATE currernt_sessions SET semester=2; (run update command from java)
 
+CREATE OR REPLACE FUNCTION deleate_report()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS
+$$
+declare 
 
+BEGIN
+  EXECUTE 'DELETE FROM report_validator';
+	RETURN OLD;
+END;
+$$;
+
+CREATE TRIGGER update_sessions_deleate_report
+AFTER UPDATE ON currernt_sessions
+FOR EACH row
+  EXECUTE PROCEDURE deleate_report();
+
+  
 CREATE TABLE login_logout(
   email_id VARCHAR(255) NOT NULL,
   status VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP default CURRENT_TIMESTAMP,
+  created_at TIMESTAMP default CURRENT_TIMESTAMP
 );
 
 
@@ -60,9 +86,11 @@ BEGIN
   EXECUTE 'create table if not exists '
     || quote_ident(table_name)
     || ' (
-      academid_year varchar(255),
-      semester INTEGER,
+      academic_year INTEGER NOT NULL,
+      semester INTEGER NOT NULL,
+      name VARCHAR(255),
       course_code VARCHAR(255),
+      instructor_id VARCHAR(255),
       grade VARCHAR(255)
     )';
   END IF;
@@ -80,6 +108,8 @@ CREATE TRIGGER create_student_records
 -- s: student, i: instructor, a: admin
 INSERT INTO users (email_id, name, password, role)
 VALUES ('2020csb1070@iitrpr.ac.in', 'Amit Kumar', '2020csb1070', 's');
+-- INSERT INTO users (email_id, name, password, role)
+-- VALUES ('abc@iitrpr.ac.in', 'abc', 'abc', 's');
 INSERT INTO users (email_id, name, password, role)
 VALUES ('2020csb1072@iitrpr.ac.in', 'Ankit Sharma', '2020csb1072', 's');
 INSERT INTO users (email_id, name, password, role)
@@ -102,9 +132,13 @@ CREATE TABLE course_catalog(
     T INTEGER NOT NULL,
     P NUMERIC(3,2) NOT NULL,
     C NUMERIC(3,2),
-    academic_year VARCHAR(255) NOT NULL,
+    academic_year INTEGER NOT NULL,
     semester INTEGER NOT NULL,
     prerequisites TEXT[],
+    branch_elligible TEXT[],
+    minm_semester_elligible INTEGER[], 
+    -- used for checking for PE but for PC, all student having semester=minm_semester_elligible will get enrolled
+    core_elective TEXT[],
     PRIMARY KEY(course_code,academic_year,semester)
 );
 
@@ -130,7 +164,7 @@ CREATE TRIGGER create_ltpc
   EXECUTE PROCEDURE make_ltpc();
 
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
-VALUES ('cs305',4,2,3,'2023',1,ARRAY ['cs302','cs304','ge109']);
+VALUES ('cs305',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
 
 
 CREATE TABLE course_offerings(
@@ -200,9 +234,9 @@ CREATE TRIGGER create_course_records
   EXECUTE PROCEDURE make_course_records();
 
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
-VALUES ('sodhi@iitrpr.ac.in','cs305',7.5);
+VALUES ('gunturi@iitrpr.ac.in','cs305',7.5);
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
-VALUES ('gunturi@iitrpr.ac.in','cs301',7.2);
+VALUES ('sodhi@iitrpr.ac.in','cs301',7.2);
 -- DELETE FROM course_offerings WHERE course_offerings.instructor_id = 'gunturi@iitrpr.ac.in' 
 -- AND course_offerings.course_code = 'cs301';
 
@@ -210,9 +244,12 @@ VALUES ('gunturi@iitrpr.ac.in','cs301',7.2);
 CREATE TABLE report_validator(
   course_code VARCHAR(255) NOT NULL,
   student_id VARCHAR(255) NOT NULL,
-  PRIMARY KEY(course_code,student_id)
+  instructor_id VARCHAR(255) NOT NULL,
+  PRIMARY KEY(course_code,student_id,instructor_id)
 );
 
+INSERT INTO report_validator (course_code,student_id,instructor_id)
+VALUES ('cs301','2020csb1109@iitrpr.ac.in','mukesh@iitrpr.ac.in');
 
 -- 100000000,010000000,001000000...
 CREATE TABLE config(
@@ -227,8 +264,13 @@ CREATE TABLE config(
   validation_check_end BOOLEAN default false
 );
 
+INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,course_float_end,
+course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
+VALUES (false,false,false,false,true,false,false,false,false);
 
-
+-- run update command from java
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2023,1,'Amit Kumar','cs305','guturi@iitrpr.ac.in','B-');
 
 
 
