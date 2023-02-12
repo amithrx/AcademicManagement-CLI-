@@ -1,14 +1,12 @@
 package softwareproject;
 import java.util.*;
-
-import javax.swing.text.Position;
-
+// import javax.swing.text.Position;
 import java.sql.*;
 
-public class Student {
-    String name;
-    String email_id;
-    Connection conn;
+public class Student extends Common{
+    private String name;
+    private String email_id;
+    private Connection conn;
     Student(String name,String email_id,Connection conn){
         this.name=name;
         this.email_id=email_id;
@@ -26,20 +24,7 @@ public class Student {
         // scn.close();
         return input;
     }
-    public void log(int state){
-        try {
-            Statement statement = conn.createStatement();
-            String status = "logged_in";
-            if(state==1){
-                status="logged_out";
-            }
-            String query = "INSERT INTO login_logout (email_id,status) VALUES('"+email_id+"','"+status+"')";
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    
     public Boolean check_elgible_for_enrolling(){
         try {
             Statement statement = conn.createStatement();
@@ -58,32 +43,13 @@ public class Student {
             return false;
         }
     }
-    public String[] current_session(){
-        String[] values=new String[2];
-        try {
-            Statement statement = conn.createStatement();
-            String query = "SELECT * FROM current_sessions";
-            ResultSet rs = statement.executeQuery(query);
-
-            if(rs.next()){
-                values[0]=rs.getString(1);
-                values[1]=rs.getString(2);
-            }
-            return values;
-            // System.out.println(rs.getString(5));
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return values;
-        }
-    }
+    
     public boolean check_previous(String current_year,String current_semester){
         int year=Integer.parseInt(current_year);
         int semester=Integer.parseInt(current_semester);
         try {
             Statement statement = conn.createStatement();
             // only 2020csb1070@iitrpr.ac.in format email is allowed
-            // System.out.println(email_id);  
             String table_name="s_"+email_id.substring(0,11);
             // System.out.println(table_name);
             if(semester==2){
@@ -130,29 +96,7 @@ public class Student {
             return false;
         }
     }
-    public String[] check_offered_or_not(String course_code,String instructor_id){
-        String values[]=new String[2];
-        values[0]="false";
-        values[1]="0";
-        try {
-            Statement statement = conn.createStatement();
-            String query = "SELECT * FROM course_offerings WHERE course_code='"+course_code+"' AND instructor_id='"+instructor_id+"'";
-            ResultSet rs = statement.executeQuery(query);
-            if(rs.next()){
-                values[0]="true";
-                values[1]=rs.getString(3);
-                System.out.println("value"+values[1]);
-                return values;
-            }else{
-                values[0]="false";
-                return values;
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return values;
-        }
-    }
+    
     public float calc_CGPA(){
         float cgpa=0;
         float credit=0;
@@ -211,7 +155,7 @@ public class Student {
                 String input=rs.getString(8).substring(1,rs.getString(8).length()-1);
                 int size=input.length();
                 System.out.println(rs.getString(8));
-                System.out.println("size is "+size);
+                // System.out.println("size is "+size);
                 if(size==0){
                     return true;
                 }else{
@@ -312,5 +256,186 @@ public class Student {
         int year=c_year-1;
         total+=check_current_credits(Integer.toString(year), current_semester);
         return total;
+    }
+    public boolean check_enrolled(String academic_year, String semester, String course_code){
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+email_id.substring(0,11);
+            String query = "SELECT * FROM "+table_name+" WHERE academic_year='"+academic_year+"' AND semester='"+semester+"' AND course_code='"+course_code+"'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next())return true;
+            return false;
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public int check_current_semester(String current_year,String current_semester){
+        int ans=1;
+        int c_year=Integer.parseInt(current_year);
+        int c_semester=Integer.parseInt(current_semester);
+        int entry=Integer.parseInt(email_id.substring(0,4));
+        ans = 2*(c_year-entry)+c_semester;
+        return ans;
+    }
+    public boolean check_min_requirements(String current_year,String current_semester,String course_code,Integer semester){
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM course_catalog WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next()){
+                if(semester>=Integer.parseInt(rs.getString(10))){
+                    //check branch elligibility
+                    String input=rs.getString(9).substring(1,rs.getString(9).length()-1);
+                    // System.out.println("input="+input);
+                    String branch[]=input.split(",");
+                    // System.out.println(branch);
+                    String stu_branch=email_id.substring(4,7);
+                    // System.out.println(stu_branch);
+                    if(branch.length==0){
+                        return true;
+                    }else{
+                        boolean flag=false;
+                        for(int i=0;i<branch.length;++i){
+                            if(branch[i].equals(stu_branch)){
+                                flag=true;
+                                break;
+                            }
+                        }
+                        return flag;
+                    }
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;     
+        }
+    }
+    public boolean check_core_elective(String current_year,String current_semester,String course_code){
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM course_catalog WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next()){
+                String input_branch=rs.getString(9).substring(1,rs.getString(9).length()-1);
+                String input_ce=rs.getString(11).substring(1,rs.getString(11).length()-1);
+                String branch[]=input_branch.split(",");
+                String ce[]=input_ce.split(",");
+                String stu_branch=email_id.substring(4,7);
+                if(branch.length==0){
+                    return true;
+                }else{
+                    boolean flag=false;
+                    for(int i=0;i<branch.length;++i){
+                        if(branch[i].equals(stu_branch)){
+                            if(ce[i].equals("PC")){
+                            }else{
+                                flag=true;
+                                break;
+                            }     
+                        }
+                    }
+                    return flag;
+                }
+            }else{
+                return true;
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return true;
+        }
+    }
+    public void derigster_course(String current_year,String current_semester, String course_code,String instructor_id){
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+email_id.substring(0,11);
+            // String query = "INSERT INTO login_logout (email_id,status) VALUES('"+email_id+"','"+status+"')";
+            String query = "DELETE FROM "+table_name+" WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"' AND instructor_id='"+instructor_id+"'";
+            statement.executeUpdate(query);
+            table_name=course_code+"_"+instructor_id.substring(0,instructor_id.indexOf("@"));
+            query = "DELETE FROM "+table_name+" WHERE email_id='"+email_id+"'";
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public void show_grade(String academic_year,String semester){
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+email_id.substring(0,11);
+            String query = "SELECT * FROM "+table_name+" WHERE academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            System.out.println("Course_code   Instructor_id   Grade");
+            while(rs.next()){
+                System.out.println(rs.getString(4)+ "    "+rs.getString(5)+"   "+rs.getString(6));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public boolean isgraduated(){
+        float credit=0;
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+email_id.substring(0,11);
+            String query = "SELECT * FROM "+table_name+" JOIN course_catalog ON "+table_name+".academic_year=course_catalog.academic_year AND "+table_name+".semester=course_catalog.semester AND "+table_name+".course_code=course_catalog.course_code WHERE "+table_name+".grade!='F'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            boolean checkcp301=false;
+            boolean checkcp302=false;
+            boolean checkcp303=false;
+            while(rs.next()){
+                credit+=Float.parseFloat(rs.getString(11));
+                if(rs.getString(4).equals("cp301")){
+                    checkcp301=true;
+                }
+                if(rs.getString(4).equals("cp302")){
+                    checkcp302=true;
+                }
+                if(rs.getString(4).equals("cp303")){
+                    checkcp303=true;
+                }
+            }
+            if(credit>=145 && checkcp301==true && checkcp302==true && checkcp303==true){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean check_already_done(String course_code){
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+email_id.substring(0,11);
+            String query = "SELECT * FROM "+table_name+" WHERE course_code='"+course_code+"' AND grade IS NOT NULL AND grade!='F'";
+            // System.out.println(query);
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next()){
+                return false;
+            }else{
+                return true;
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return true;
+        }
     }
 }

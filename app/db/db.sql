@@ -5,6 +5,8 @@
 -- As student request for enrolling in a course, it get also stored in course_record table of that particular course_code & instructor_id
 -- As the session changes, admin will enroll all the courses of student who got 'F' in the previous semester if that course being floated this semester 
 -- For checking whether elligible to graduate or not, just count total credits completed and whether completed BTP or not
+-- cp301,cp302,cp303 must for graduation
+-- minm credit is 145
 
 CREATE TABLE current_sessions(
     academic_year INTEGER NOT NULL,
@@ -136,7 +138,7 @@ CREATE TABLE course_catalog(
     semester INTEGER NOT NULL,
     prerequisites TEXT[] default '{}',
     branch_elligible TEXT[] default '{}',
-    minm_semester_elligible INTEGER[] default '{}', 
+    minm_semester_elligible INTEGER default 0, 
     -- used for checking for PE but for PC, all student having semester=minm_semester_elligible will get enrolled
     core_elective TEXT[] default '{}',
     PRIMARY KEY(course_code,academic_year,semester)
@@ -171,8 +173,8 @@ INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisite
 VALUES ('cs304',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
 VALUES ('ge109',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
-INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester)
-VALUES ('cs305',4,2,3,2023,1);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective)
+VALUES ('cs305',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],5,ARRAY['PE','PE','PE']);
 
 
 CREATE TABLE course_offerings(
@@ -245,6 +247,8 @@ INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
 VALUES ('gunturi@iitrpr.ac.in','cs305',7.5);
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
 VALUES ('sodhi@iitrpr.ac.in','cs301',7.2);
+INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
+VALUES ('rano@iitrpr.ac.in','cs304',7.2);
 -- DELETE FROM course_offerings WHERE course_offerings.instructor_id = 'gunturi@iitrpr.ac.in' 
 -- AND course_offerings.course_code = 'cs301';
 
@@ -253,7 +257,7 @@ CREATE TABLE report_validator(
   course_code VARCHAR(255) NOT NULL,
   student_id VARCHAR(255) NOT NULL,
   instructor_id VARCHAR(255) NOT NULL,
-  PRIMARY KEY(course_code,student_id,instructor_id)
+  PRIMARY KEY(course_code,instructor_id)
 );
 
 INSERT INTO report_validator (course_code,student_id,instructor_id)
@@ -274,7 +278,7 @@ CREATE TABLE config(
 
 INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,course_float_end,
 course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
-VALUES (false,false,false,false,true,false,false,false,false);
+VALUES (false,false,false,false,false,false,false,false,true);
 
 -- run update command from java
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
@@ -283,14 +287,16 @@ VALUES (false,false,false,false,true,false,false,false,false);
 -- VALUES(2023,1,'Amit Kumar','cs302','abc@iitrpr.ac.in','A-');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2023,1,'Amit Kumar','ge109','saini@iitrpr.ac.in','A');
-INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
-INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+-- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+-- VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id) 
+VALUES(2023,1,'Amit Kumar','cs305','gunturi@iitrpr.ac.in');
 
 
 
