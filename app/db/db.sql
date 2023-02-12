@@ -134,11 +134,11 @@ CREATE TABLE course_catalog(
     C NUMERIC(3,2),
     academic_year INTEGER NOT NULL,
     semester INTEGER NOT NULL,
-    prerequisites TEXT[],
-    branch_elligible TEXT[],
-    minm_semester_elligible INTEGER[], 
+    prerequisites TEXT[] default '{}',
+    branch_elligible TEXT[] default '{}',
+    minm_semester_elligible INTEGER[] default '{}', 
     -- used for checking for PE but for PC, all student having semester=minm_semester_elligible will get enrolled
-    core_elective TEXT[],
+    core_elective TEXT[] default '{}',
     PRIMARY KEY(course_code,academic_year,semester)
 );
 
@@ -163,8 +163,16 @@ CREATE TRIGGER create_ltpc
   FOR EACH row
   EXECUTE PROCEDURE make_ltpc();
 
+-- INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
+-- VALUES ('cs305',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
-VALUES ('cs305',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+VALUES ('cs302',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
+VALUES ('cs304',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
+VALUES ('ge109',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester)
+VALUES ('cs305',4,2,3,2023,1);
 
 
 CREATE TABLE course_offerings(
@@ -191,8 +199,8 @@ BEGIN
   EXECUTE 'create table if not exists '
     || quote_ident(table_name)
     || ' (
-      email_id varchar(255),
-      name VARCHAR(255),
+      email_id varchar(255) NOT NULL,
+      name VARCHAR(255) NOT NULL,
       grade VARCHAR(255)
     )';
 
@@ -269,8 +277,20 @@ course_register_start,course_register_end,grade_start,grade_end,validation_check
 VALUES (false,false,false,false,true,false,false,false,false);
 
 -- run update command from java
+-- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+-- VALUES(2023,1,'Amit Kumar','cs305','guturi@iitrpr.ac.in','B');
+-- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+-- VALUES(2023,1,'Amit Kumar','cs302','abc@iitrpr.ac.in','A-');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2023,1,'Amit Kumar','cs305','guturi@iitrpr.ac.in','B-');
+VALUES(2023,1,'Amit Kumar','ge109','saini@iitrpr.ac.in','A');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 
 
 

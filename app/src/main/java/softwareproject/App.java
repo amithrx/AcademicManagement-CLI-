@@ -66,6 +66,7 @@ public class App {
                         while(true){
                             input=s.display(scn);
                             if(input.equals("1")){
+                                //Registering a course
                                 if(s.check_elgible_for_enrolling()==true){
                                     System.out.println("Enter course_code");
                                     String course_code = scn.nextLine();
@@ -74,21 +75,35 @@ public class App {
                                     String check[]=s.check_offered_or_not(course_code,instructor_id);
                                     if(check[0].equals("true")){
                                         System.out.println("enter");
-                                        if(s.calc_CGPA()>=0){
-                                            System.out.println("yep");
+                                        System.out.println(check[1]);
+                                        if(s.calc_CGPA()>=Float.parseFloat(check[1])){
                                             String[] result=s.current_session();
-                                            System.out.println("--------");
-                                            System.out.println(result[0]);
-                                            System.out.println(result[1]);
+                                            if(s.check_prerequisites(course_code,result[0],result[1])){
                                             boolean check_previous=s.check_previous(result[0], result[1]);
                                             boolean check_back_previous=s.check_back_previous(result[0], result[1]);
-
-                                        if(check_back_previous==true && check_previous==true){
-                                            System.out.println("prev exist");
-                                        }else{
-                                            // System.out.println("prev don't exit");
-
-                                        }
+                                            float current_registered_credits=s.check_current_credits(result[0],result[1]);
+                                            float course_credit=s.course_credit(result[0],result[1],course_code);
+                                            // System.out.println(current_registered_credits);
+                                            // System.out.println(course_credit);
+                                            if(check_back_previous==true && check_previous==true){
+                                                // System.out.println("prev exist");
+                                                float earn_prev_two=s.calc_credit_prev_two(result[0],result[1]);
+                                                if(course_credit+current_registered_credits<=1.25*earn_prev_two){
+                                                    s.register_course(result[0],result[1],course_code,instructor_id);
+                                                }else{
+                                                    System.out.println("Credit limit exceeded");
+                                                }
+                                            }else{
+                                                // System.out.println("prev don't exit");   
+                                                if(course_credit+current_registered_credits<=18){
+                                                    s.register_course(result[0],result[1],course_code,instructor_id);
+                                                }else{
+                                                    System.out.println("Credit limit exceeded");
+                                                }                                 
+                                            }
+                                            }else{
+                                                System.out.println("Not fulfilling prerequisites");
+                                            } 
                                         }else{
                                             System.out.println("Not fulfilling CGPA criteria");
                                         }
