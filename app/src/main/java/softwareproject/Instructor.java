@@ -177,6 +177,97 @@ public class Instructor extends Common{
             e.printStackTrace();
         }
     }
+    public void addPCcourse(String course_code,String academic_year,String semester){
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next()){
+                Integer minm_semester_elligible=Integer.parseInt(rs.getString(10));
+                Integer year=Integer.parseInt(academic_year);
+                Integer sem=Integer.parseInt(semester);
+                String input_branch=rs.getString(9).substring(1,rs.getString(9).length()-1);
+                String branch[]=input_branch.split(",");
+                // System.out.println(branch);
+                String input_ce=rs.getString(11).substring(1,rs.getString(11).length()-1);
+                String ce[]=input_ce.split(",");
+                // System.out.println(ce);
+                Integer size=branch.length;
+                for(int i=0;i<size;++i){
+                    if(ce[i].equals("PC")){
+                        String b=branch[i];
+                        if((minm_semester_elligible-sem)%2==0){
+                            minm_semester_elligible=(minm_semester_elligible-sem)/2;
+                        }else{
+                            minm_semester_elligible=(minm_semester_elligible-sem)/2+1;
+                        }
+                        minm_semester_elligible=year-minm_semester_elligible;
+                        String temp=minm_semester_elligible.toString()+b;
+                        Statement statement1 = conn.createStatement();
+                        String query1 = "SELECT * FROM users";
+                        ResultSet rs1 = statement1.executeQuery(query1);
+                        while(rs1.next()){
+                            if((rs1.getString(1).substring(0,7)).equals(temp)){
+                                String stu_name=rs1.getString(2);
+                                Statement statement2 = conn.createStatement();
+                                String table_name="s_"+rs1.getString(1).substring(0,11);
+                                String query2 = "INSERT INTO "+table_name+" (academic_year,semester,name,course_code,instructor_id) VALUES('"+academic_year+"','"+semester+"','"+stu_name+"','"+course_code+"','"+email_id+"')";
+                                statement2.executeUpdate(query2);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public void removepccourse(String course_code,String academic_year,String semester){
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            ResultSet rs = statement.executeQuery(query);
+            if(rs.next()){
+                Integer minm_semester_elligible=Integer.parseInt(rs.getString(10));
+                Integer year=Integer.parseInt(academic_year);
+                Integer sem=Integer.parseInt(semester);
+                String input_branch=rs.getString(9).substring(1,rs.getString(9).length()-1);
+                String branch[]=input_branch.split(",");
+                // System.out.println(branch);
+                String input_ce=rs.getString(11).substring(1,rs.getString(11).length()-1);
+                String ce[]=input_ce.split(",");
+                // System.out.println(ce);
+                Integer size=branch.length;
+                for(int i=0;i<size;++i){
+                    if(ce[i].equals("PC")){
+                        String b=branch[i];
+                        if((minm_semester_elligible-sem)%2==0){
+                            minm_semester_elligible=(minm_semester_elligible-sem)/2;
+                        }else{
+                            minm_semester_elligible=(minm_semester_elligible-sem)/2+1;
+                        }
+                        minm_semester_elligible=year-minm_semester_elligible;
+                        String temp=minm_semester_elligible.toString()+b;
+                        Statement statement1 = conn.createStatement();
+                        String query1 = "SELECT * FROM users";
+                        ResultSet rs1 = statement1.executeQuery(query1);
+                        while(rs1.next()){
+                            if((rs1.getString(1).substring(0,7)).equals(temp)){
+                                Statement statement2 = conn.createStatement();
+                                String table_name="s_"+rs1.getString(1).substring(0,11);
+                                String query2 = "DELETE FROM "+table_name+" WHERE academic_year='"+academic_year+"' AND semester='"+semester+"' AND course_code='"+course_code+"' AND instructor_id='"+email_id+"'";
+                                statement2.executeUpdate(query2);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
 
 

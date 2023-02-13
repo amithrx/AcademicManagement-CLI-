@@ -7,6 +7,7 @@
 -- For checking whether elligible to graduate or not, just count total credits completed and whether completed BTP or not
 -- cp301,cp302,cp303 must for graduation
 -- minm credit is 145
+-- core courses are floated in every semester
 
 CREATE TABLE current_sessions(
     academic_year INTEGER NOT NULL,
@@ -138,7 +139,7 @@ CREATE TABLE course_catalog(
     semester INTEGER NOT NULL,
     prerequisites TEXT[] default '{}',
     branch_elligible TEXT[] default '{}',
-    minm_semester_elligible INTEGER default 0, 
+    minm_semester_elligible INTEGER default 1, 
     -- used for checking for PE but for PC, all student having semester=minm_semester_elligible will get enrolled
     core_elective TEXT[] default '{}',
     PRIMARY KEY(course_code,academic_year,semester)
@@ -171,8 +172,8 @@ INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisite
 VALUES ('cs302',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
 VALUES ('cs304',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
-INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
-VALUES ('ge109',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective)
+VALUES ('ge109',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],7,ARRAY['PC','PE','PE']);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective)
 VALUES ('cs305',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],5,ARRAY['PE','PE','PE']);
 
@@ -278,7 +279,7 @@ CREATE TABLE config(
 
 INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,course_float_end,
 course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
-VALUES (false,false,false,false,false,false,false,false,true);
+VALUES (true,false,false,false,false,false,false,false,false);
 
 -- run update command from java
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)

@@ -213,6 +213,7 @@ public class App {
                                             System.out.println("Enter minm CGPA (Enter 0 for no constraints)");
                                             String cgpa=scn.nextLine();
                                             i.addcourse(course_code,cgpa);
+                                            i.addPCcourse(course_code,result[0],result[1]);
                                             System.out.println("Succesfully added");
                                         }else{
                                             System.out.println("Not present in catalog");
@@ -229,6 +230,7 @@ public class App {
                                     String check[]=i.check_offered_or_not(course_code,email,conn);
                                     if(check[0].equals("true")){
                                         i.removecourse(course_code);
+                                        i.removepccourse(course_code,result[0],result[1]);
                                         System.out.println("Successfully deregistered");
                                     }else{
                                         System.out.println("Not offered");
@@ -265,6 +267,58 @@ public class App {
                         while(true){
                             input=a.display(scn);
                             if(input.equals("1")){
+                                if(a.elligiible_edit_catalog()){
+                                    System.out.println("Press 1. for adding course, 2. for editing course");
+                                    String take=scn.nextLine();
+                                    if(take.equals("1")){
+                                        System.out.println("Enter course_code");
+                                        String input_code=scn.nextLine();
+                                        if(a.check_catalog_offered(input_code,result[0],result[1])){
+                                            System.out.println("Enter L");
+                                            String l=scn.nextLine();
+                                            System.out.println("Enter T");
+                                            String t=scn.nextLine();
+                                            System.out.println("Enter P");
+                                            String p=scn.nextLine();
+                                            System.out.println("Enter prerequisites(comma separated)");
+                                            String prerequisites=scn.nextLine();
+                                            System.out.println("Enter branch_elligible(comma separated)");
+                                            String branch_elligible=scn.nextLine();
+                                            System.out.println("Enter minm semester required");
+                                            String minm_sem=scn.nextLine();
+                                            System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)");
+                                            String core_elective=scn.nextLine();
+                                            a.addcoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective);
+                                        }else{
+                                            System.out.println("Already in catalog");
+                                        }
+                                        
+                                    }else{
+                                        System.out.println("Enter course_code");
+                                        String input_code=scn.nextLine();
+                                        if(a.check_catalog_offered(input_code, result[0], result[1])){
+                                            System.out.println("Not offered");
+                                        }else{
+                                            System.out.println("Enter L");
+                                            String l=scn.nextLine();
+                                            System.out.println("Enter T");
+                                            String t=scn.nextLine();
+                                            System.out.println("Enter P");
+                                            String p=scn.nextLine();
+                                            System.out.println("Enter prerequisites(comma separated)");
+                                            String prerequisites=scn.nextLine();
+                                            System.out.println("Enter branch_elligible(comma separated)(Needed)");
+                                            String branch_elligible=scn.nextLine();
+                                            System.out.println("Enter minm semester required(Needed)");
+                                            String minm_sem=scn.nextLine();
+                                            System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)(Needed)");
+                                            String core_elective=scn.nextLine();
+                                            a.updatecoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective);
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("Can't edit course catalog now");
+                                }
 
                             }else if(input.equals("2")){
 
