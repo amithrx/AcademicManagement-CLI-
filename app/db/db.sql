@@ -279,25 +279,25 @@ CREATE TABLE config(
 
 INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,course_float_end,
 course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
-VALUES (true,false,false,false,false,false,false,false,false);
+VALUES (false,false,false,false,false,false,false,true,false);
 
 -- run update command from java
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 -- VALUES(2023,1,'Amit Kumar','cs305','guturi@iitrpr.ac.in','B');
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 -- VALUES(2023,1,'Amit Kumar','cs302','abc@iitrpr.ac.in','A-');
-INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2023,1,'Amit Kumar','ge109','saini@iitrpr.ac.in','A');
+-- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+-- VALUES(2023,1,'Amit Kumar','ge109','saini@iitrpr.ac.in','F');
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 -- VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
-INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id) 
-VALUES(2023,1,'Amit Kumar','cs305','gunturi@iitrpr.ac.in');
+-- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id) 
+-- VALUES(2023,1,'Amit Kumar','cs305','gunturi@iitrpr.ac.in');
 
 
 

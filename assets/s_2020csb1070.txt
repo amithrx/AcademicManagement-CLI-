@@ -1,0 +1,5 @@
+2022,1,Amit Kumar,cs304,rano@iitrpr.ac.in,F
+2022,1,Amit Kumar,cs304,rano@iitrpr.ac.in,F
+2022,1,Amit Kumar,cs304,rano@iitrpr.ac.in,F
+2023,1,Amit Kumar,ge109,saini@iitrpr.ac.in,A
+2023,1,Amit Kumar,cs305,gunturi@iitrpr.ac.in,null

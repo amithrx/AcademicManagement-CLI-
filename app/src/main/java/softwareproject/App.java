@@ -267,7 +267,7 @@ public class App {
                         while(true){
                             input=a.display(scn);
                             if(input.equals("1")){
-                                if(a.elligiible_edit_catalog()){
+                                if(a.elligible_edit_catalog()){
                                     System.out.println("Press 1. for adding course, 2. for editing course");
                                     String take=scn.nextLine();
                                     if(take.equals("1")){
@@ -321,18 +321,73 @@ public class App {
                                 }
 
                             }else if(input.equals("2")){
-
+                                //viewing grade
+                                System.out.println("Enter student email_id");
+                                String stu_email=scn.nextLine();
+                                if(a.check_stu_email(stu_email)){
+                                    System.out.println("Enter academic_year");
+                                    String ac_year=scn.nextLine();
+                                    System.out.println("Enter semester");
+                                    String sem=scn.nextLine();
+                                    a.view_grade(stu_email,ac_year,sem);
+                                }else{
+                                    System.out.println("No such student");
+                                }
                             }else if(input.equals("3")){
+                                //generating transcripts
+                                System.out.println("Enter student email_id");
+                                String stu_email=scn.nextLine();
+                                if(a.check_stu_email(stu_email)){
+                                    a.generate_transcripts(stu_email);
+                                    System.out.println("Transcript generated");
+                                }else{
+                                    System.out.println("No such student");
+                                }
 
                             }else if(input.equals("4")){
-
+                                //edit deadlines
+                                System.out.println("Press 1. for course_catalog, 2. for course_float, 3. for course_register, 4. for grade");
+                                String user_input=scn.nextLine();
+                                if(user_input.equals("4")){
+                                    System.out.println("Input should be 'T' or 'F', with one 'T' at max");
+                                    System.out.println("Set start time");
+                                    String start = scn.nextLine();
+                                    System.out.println("Set end time");
+                                    String end= scn.nextLine();
+                                    System.out.println("Set validation_check time");
+                                    String validation_check=scn.nextLine();
+                                    a.set_grade_deadline(start,end,validation_check);
+                                }else{
+                                    System.out.println("Input should be 'T' or 'F', with one 'T' at max");
+                                    System.out.println("Set start time");
+                                    String start = scn.nextLine();
+                                    System.out.println("Set end time");
+                                    String end= scn.nextLine();
+                                    a.set_rest_deadline(user_input,start,end);
+                                }
                             }else if(input.equals("5")){
-
+                                //update current sessions
+                                System.out.println("Enter academic_year");
+                                String year=scn.nextLine();
+                                System.out.println("Enter semester");
+                                String sem=scn.nextLine();
+                                if(!year.equals(result[0]) || !sem.equals(result[1])){
+                                    a.updatesession(year,sem,result[0],result[1]);
+                                    System.out.println("Succesfully updated");
+                                }
                             }else if(input.equals("6")){
+                                if(a.elligible_validate()){
+                                    a.validate(result[0],result[1]);
+                                    System.out.println("Successfully validated");
+                                }else{
+                                    System.out.println("Not elligible for validating");
+                                }
 
-                            }else{
+                            }else if(input.equals("7")){
                                 a.log(1,conn,email);
                                  break;
+                            }
+                            else{
                             }
                         }
                       }
@@ -345,8 +400,10 @@ public class App {
                   e.printStackTrace();
               }
   
-            }else{
-              System.exit(0);
+            }else if(input.equals("2")){
+                System.exit(0);
+            }
+            else{
             }
         }
     }
