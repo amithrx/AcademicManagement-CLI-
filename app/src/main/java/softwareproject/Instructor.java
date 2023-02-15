@@ -22,7 +22,7 @@ public class Instructor extends Person{
         return input;
     }
 
-    public void show_course_record(String course_code){
+    public void showCourseRecord(String course_code){
         try {
             Statement statement = conn.createStatement();
             String table_name=course_code+"_"+email_id.substring(0,email_id.indexOf("@"));
@@ -37,7 +37,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void update_grade(String course_code){
+    public void updateGrade(String course_code){
         try {
             File file = new File(
                     "C:\\softwareProject\\assets\\grade.txt");
@@ -69,7 +69,7 @@ public class Instructor extends Person{
         }
     }
 
-    public boolean ispresentincatalog(String current_year,String current_semester,String course_code){
+    public boolean isPresentInCatalog(String current_year,String current_semester,String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+current_year+"' AND semester='"+current_semester+"'";
@@ -85,7 +85,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void addcourse(String course_code,String cgpa){
+    public void addCourse(String course_code,String cgpa){
         try {
             Statement statement = conn.createStatement();
             String query = "INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints) VALUES ('"+email_id+"','"+course_code+"','"+cgpa+"')";
@@ -95,7 +95,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void removecourse(String course_code){
+    public void removeSymbol(String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "DELETE FROM course_offerings WHERE instructor_id='"+email_id+"' AND course_code='"+course_code+"'";
@@ -105,7 +105,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void validatecourse(String course_code){
+    public void validateCourse(String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM report_validator WHERE course_code='"+course_code+"' AND instructor_id='"+email_id+"'";
@@ -119,7 +119,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void addPCcourse(String course_code,String academic_year,String semester){
+    public void addPCCourse(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
@@ -163,7 +163,7 @@ public class Instructor extends Person{
         }
     }
 
-    public void removepccourse(String course_code,String academic_year,String semester){
+    public void removePCCourse(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";

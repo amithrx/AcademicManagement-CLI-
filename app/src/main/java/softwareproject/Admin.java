@@ -22,7 +22,7 @@ public class Admin extends Person{
         return input;
     } 
 
-    public void modifycoursecatalog(String course_code,String l,String t,String p,
+    public void modifyCourseCatalog(String course_code,String l,String t,String p,
     String academic_year,String semester,String prerequisites,String branch_elligible,
     String minm_semester,String core_elective,String type){
         String query="";
@@ -63,7 +63,7 @@ public class Admin extends Person{
         }
     }
 
-    public boolean check_catalog_offered(String course_code,String academic_year,String semester){
+    public boolean checkCatalogOffered(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
@@ -79,7 +79,7 @@ public class Admin extends Person{
         }
     }
 
-    public boolean check_stu_email(String stu_email){
+    public boolean checkStudentEmail(String stu_email){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM users WHERE email_id='"+stu_email+"'";
@@ -95,7 +95,7 @@ public class Admin extends Person{
         }
     }
 
-    public void generate_transcripts(String stu_email){
+    public void generateTranscripts(String stu_email){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+stu_email.substring(0,11);
@@ -121,7 +121,7 @@ public class Admin extends Person{
         }
     }
 
-    public void set_grade_deadline(String start, String end, String validation_check){
+    public void setGradeDeadline(String start, String end, String validation_check){
         try {
             Statement statement = conn.createStatement();
             String query = "";
@@ -141,7 +141,7 @@ public class Admin extends Person{
         }
     }
 
-    public void set_rest_deadline(String type, String start, String end){
+    public void setRestDeadline(String type, String start, String end){
         try {
             Statement statement = conn.createStatement();
             String query = "";
@@ -180,7 +180,7 @@ public class Admin extends Person{
         }
     }
 
-    public void updatesession(String newyear,String newsem,String academic_year,String semester){
+    public void updateSession(String newyear,String newsem,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "UPDATE current_sessions SET academic_year='"+newyear+"',semester='"+newsem+"'";

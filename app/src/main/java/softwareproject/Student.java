@@ -18,7 +18,7 @@ public class Student extends Person{
         String input = scn.nextLine();
         return input;
     }
-    public boolean check_previous(String current_year,String current_semester){
+    public boolean checkPrevious(String current_year,String current_semester){
         int year=Integer.parseInt(current_year);
         int semester=Integer.parseInt(current_semester);
         try {
@@ -48,7 +48,7 @@ public class Student extends Person{
         }
     }
 
-    public boolean check_back_previous(String current_year,String current_semester){
+    public boolean checkBackPrevious(String current_year,String current_semester){
         int year=Integer.parseInt(current_year);
         int semester=Integer.parseInt(current_semester);
         try {
@@ -71,7 +71,7 @@ public class Student extends Person{
         }
     }
     
-    public float calc_CGPA(){
+    public float calcCGPA(){
         float cgpa=0;
         float credit=0;
         try {
@@ -115,7 +115,7 @@ public class Student extends Person{
         }
     }
 
-    public boolean check_prerequisites(String course_code,String academic_year,String semester){
+    public boolean checkPrerequisites(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
@@ -160,7 +160,7 @@ public class Student extends Person{
             return false;
         }
     }
-    public float check_current_credits(String academic_year,String semester){
+    public float checkCurrentCredits(String academic_year,String semester){
         float credit=0;
         try {
             Statement statement = conn.createStatement();
@@ -179,7 +179,7 @@ public class Student extends Person{
         }
     }
 
-    public float course_credit(String academic_year,String semester,String course_code){
+    public float courseCredit(String academic_year,String semester,String course_code){
         float credit=0;
         try {
             Statement statement = conn.createStatement();
@@ -197,7 +197,7 @@ public class Student extends Person{
         }
     }
 
-    public void register_course(String academic_year, String semester, String course_code,String instructor_id){
+    public void registerCourse(String academic_year, String semester, String course_code,String instructor_id){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
@@ -212,26 +212,26 @@ public class Student extends Person{
         }
     }
 
-    public float calc_credit_prev_two(String current_year,String current_semester){
+    public float calcCreditOfPrevTwo(String current_year,String current_semester){
         float total=0;
         int c_year=Integer.parseInt(current_year);
         int c_semester=Integer.parseInt(current_semester);
         //prev credits
         if(c_semester==2){
             int semester=1;
-            total+=check_current_credits(current_year, Integer.toString(semester));
+            total+=checkCurrentCredits(current_year, Integer.toString(semester));
         }else{
             int semester=2;
             int year=c_year-1;
-            total+=check_current_credits(Integer.toString(year), Integer.toString(semester));
+            total+=checkCurrentCredits(Integer.toString(year), Integer.toString(semester));
         }
         //prev-prev credits
         int year=c_year-1;
-        total+=check_current_credits(Integer.toString(year), current_semester);
+        total+=checkCurrentCredits(Integer.toString(year), current_semester);
         return total;
     }
 
-    public boolean check_enrolled(String academic_year, String semester, String course_code){
+    public boolean checkEnrolled(String academic_year, String semester, String course_code){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
@@ -247,7 +247,7 @@ public class Student extends Person{
         }
     }
 
-    public int check_current_semester(String current_year,String current_semester){
+    public int checkCurrentSemester(String current_year,String current_semester){
         int ans=1;
         int c_year=Integer.parseInt(current_year);
         int c_semester=Integer.parseInt(current_semester);
@@ -256,7 +256,7 @@ public class Student extends Person{
         return ans;
     }
 
-    public boolean check_min_requirements(String current_year,String current_semester,String course_code,Integer semester){
+    public boolean checkMinRequirements(String current_year,String current_semester,String course_code,Integer semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"'";
@@ -291,7 +291,7 @@ public class Student extends Person{
             return false;     
         }
     }
-    public boolean check_core_elective(String current_year,String current_semester,String course_code){
+    public boolean checkCoreElective(String current_year,String current_semester,String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"'";
@@ -326,7 +326,7 @@ public class Student extends Person{
         }
     }
 
-    public void derigster_course(String current_year,String current_semester, String course_code,String instructor_id){
+    public void deRegisterCourse(String current_year,String current_semester, String course_code,String instructor_id){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
@@ -340,7 +340,7 @@ public class Student extends Person{
         }
     }
 
-    public boolean isgraduated(){
+    public boolean isGraduated(){
         float credit=0;
         try {
             Statement statement = conn.createStatement();
@@ -373,7 +373,7 @@ public class Student extends Person{
         }
     }
 
-    public boolean check_already_done(String course_code){
+    public boolean checkAlreadyDone(String course_code){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);

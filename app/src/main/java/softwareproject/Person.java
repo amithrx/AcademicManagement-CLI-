@@ -32,13 +32,12 @@ public class Person {
                 values[1]=rs.getString(2);
             }
             return values;
-            // System.out.println(rs.getString(5));
         } catch (SQLException e) {
             e.printStackTrace();
             return values;
         }
     }
-    public String[] check_offered_or_not(String course_code,String instructor_id,Connection conn){
+    public String[] checkOfferedOrNot(String course_code,String instructor_id,Connection conn){
         String values[]=new String[2];
         values[0]="false";
         values[1]="0";
@@ -49,7 +48,6 @@ public class Person {
             if(rs.next()){
                 values[0]="true";
                 values[1]=rs.getString(3);
-                // System.out.println("value"+values[1]);
                 return values;
             }else{
                 values[0]="false";
@@ -60,7 +58,7 @@ public class Person {
             return values;
         }
     }
-    public boolean check_elligibility(String type,Connection conn){
+    public boolean checkElligibility(String type,Connection conn){
         int check=Integer.parseInt(type);
         try {
             Statement statement = conn.createStatement();
@@ -79,7 +77,7 @@ public class Person {
         }
     }
     
-    public void view_grade(String stu_email,String academic_year,String semester){
+    public void viewGrade(String stu_email,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+stu_email.substring(0,11);

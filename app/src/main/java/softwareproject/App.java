@@ -58,39 +58,39 @@ public class App {
                         Student s = new Student(name,email,conn);
                         s.log(0,conn,email);
                         String[] result=s.current_session(conn);
-                        Integer current_semester=s.check_current_semester(result[0],result[1]);
+                        Integer current_semester=s.checkCurrentSemester(result[0],result[1]);
                         System.out.println("Welcome "+name);
                         while(true){
                             input=s.display(scn);
                             if(input.equals("1")){
                                 //Registering a course
-                                if(s.check_elligibility("5",conn)==true){
+                                if(s.checkElligibility("5",conn)==true){
                                     System.out.println("Enter course_code");
                                     String course_code = scn.nextLine();
                                     System.out.println("Enter instructor_id");
                                     String instructor_id = scn.nextLine();
-                                    if(s.check_already_done(course_code)){
-                                        String check[]=s.check_offered_or_not(course_code,instructor_id,conn);
+                                    if(s.checkAlreadyDone(course_code)){
+                                        String check[]=s.checkOfferedOrNot(course_code,instructor_id,conn);
                                     if(check[0].equals("true")){
-                                        if(s.check_min_requirements(result[0],result[1],course_code,current_semester)){
-                                            if(s.calc_CGPA()>=Float.parseFloat(check[1])){
-                                                if(s.check_prerequisites(course_code,result[0],result[1])){
-                                                boolean check_previous=s.check_previous(result[0], result[1]);
-                                                boolean check_back_previous=s.check_back_previous(result[0], result[1]);
-                                                float current_registered_credits=s.check_current_credits(result[0],result[1]);
-                                                float course_credit=s.course_credit(result[0],result[1],course_code);
+                                        if(s.checkMinRequirements(result[0],result[1],course_code,current_semester)){
+                                            if(s.calcCGPA()>=Float.parseFloat(check[1])){
+                                                if(s.checkPrerequisites(course_code,result[0],result[1])){
+                                                boolean check_previous=s.checkPrevious(result[0], result[1]);
+                                                boolean check_back_previous=s.checkBackPrevious(result[0], result[1]);
+                                                float current_registered_credits=s.checkCurrentCredits(result[0],result[1]);
+                                                float course_credit=s.courseCredit(result[0],result[1],course_code);
                                                 
                                                 if(check_back_previous==true && check_previous==true){
-                                                    float earn_prev_two=s.calc_credit_prev_two(result[0],result[1]);
+                                                    float earn_prev_two=s.calcCreditOfPrevTwo(result[0],result[1]);
                                                     if(course_credit+current_registered_credits<=1.25*earn_prev_two){
-                                                        s.register_course(result[0],result[1],course_code,instructor_id);
+                                                        s.registerCourse(result[0],result[1],course_code,instructor_id);
                                                         System.out.println("Succesfully enrolled");
                                                     }else{
                                                         System.out.println("Credit limit exceeded");
                                                     }
                                                 }else{  
                                                     if(course_credit+current_registered_credits<=18){
-                                                        s.register_course(result[0],result[1],course_code,instructor_id);
+                                                        s.registerCourse(result[0],result[1],course_code,instructor_id);
                                                         System.out.println("Succesfully enrolled");
                                                     }else{
                                                         System.out.println("Credit limit exceeded");
@@ -119,17 +119,17 @@ public class App {
 
                             }else if(input.equals("2")){
                                 //Deregistering a course
-                                if(s.check_elligibility("5",conn)==true){
+                                if(s.checkElligibility("5",conn)==true){
                                     System.out.println("Enter course_code");
                                     String course_code = scn.nextLine();
                                     System.out.println("Enter instructor_id");
                                     String instructor_id = scn.nextLine();
-                                    String check[]=s.check_offered_or_not(course_code,instructor_id,conn);
+                                    String check[]=s.checkOfferedOrNot(course_code,instructor_id,conn);
                                     if(check[0].equals("true")){
-                                        if(s.check_enrolled(result[0],result[1],course_code)){
+                                        if(s.checkEnrolled(result[0],result[1],course_code)){
                                             //check for PC or PE
-                                            if(s.check_core_elective(result[0],result[1],course_code)){
-                                                s.derigster_course(result[0],result[1],course_code,instructor_id);
+                                            if(s.checkCoreElective(result[0],result[1],course_code)){
+                                                s.deRegisterCourse(result[0],result[1],course_code,instructor_id);
                                                 System.out.println("Successfully un-enrolled");
                                             }else{
                                                 System.out.println("You can't unenroll PC coures");
@@ -150,15 +150,15 @@ public class App {
                                 System.out.println("Enter semester");
                                 String semester = scn.nextLine();
                                 System.out.println("Your grade");
-                                s.view_grade(email,academic_year,semester);
+                                s.viewGrade(email,academic_year,semester);
                             }else if(input.equals("4")){
                                 // calculating CGPA
-                                Float cgpa=s.calc_CGPA();
+                                Float cgpa=s.calcCGPA();
                                 System.out.println("Your cgpa is: "+cgpa);
                     
                             }else if(input.equals("5")){
                                 // checking whether graduated or not
-                                if(s.isgraduated()){
+                                if(s.isGraduated()){
                                     System.out.println("Elligible for graduation");
                                 }else{
                                     System.out.println("Not elligible for graduation");
@@ -183,20 +183,20 @@ public class App {
                                 // view grade
                                 System.out.println("Enter course_code");
                                 String course_code=scn.nextLine();
-                                String check[]=i.check_offered_or_not(course_code,email,conn);
+                                String check[]=i.checkOfferedOrNot(course_code,email,conn);
                                 if(check[0].equals("true")){
-                                    i.show_course_record(course_code);
+                                    i.showCourseRecord(course_code);
                                 }else{
                                     System.out.println("Course hasn't been offered");
                                 }   
                             }else if(input.equals("2")){
                                 //Update grade
-                                if(i.check_elligibility("7",conn) ||i.check_elligibility("9",conn)){
+                                if(i.checkElligibility("7",conn) ||i.checkElligibility("9",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
-                                    String check[]=i.check_offered_or_not(course_code,email,conn);
+                                    String check[]=i.checkOfferedOrNot(course_code,email,conn);
                                     if(check[0].equals("true")){
-                                        i.update_grade(course_code);
+                                        i.updateGrade(course_code);
                                         System.out.println("Successfully updated");
                                     }else{
                                         System.out.println("Course hasn't been offered");
@@ -206,18 +206,18 @@ public class App {
                                 }
                             }else if(input.equals("3")){
                                 // Register course
-                                if(i.check_elligibility("3",conn)){
+                                if(i.checkElligibility("3",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
-                                    String check[]=i.check_offered_or_not(course_code,email,conn);
+                                    String check[]=i.checkOfferedOrNot(course_code,email,conn);
                                     if(check[0].equals("true")){
                                         System.out.println("Already registered");
                                     }else{
-                                        if(i.ispresentincatalog(result[0],result[1],course_code)){
+                                        if(i.isPresentInCatalog(result[0],result[1],course_code)){
                                             System.out.println("Enter minm CGPA (Enter 0 for no constraints)");
                                             String cgpa=scn.nextLine();
-                                            i.addcourse(course_code,cgpa);
-                                            i.addPCcourse(course_code,result[0],result[1]);
+                                            i.addCourse(course_code,cgpa);
+                                            i.addPCCourse(course_code,result[0],result[1]);
                                             System.out.println("Succesfully added");
                                         }else{
                                             System.out.println("Not present in catalog");
@@ -228,13 +228,13 @@ public class App {
                                 }
                             }else if(input.equals("4")){
                                 // Dereigister course
-                                if(i.check_elligibility("3",conn)){
+                                if(i.checkElligibility("3",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
-                                    String check[]=i.check_offered_or_not(course_code,email,conn);
+                                    String check[]=i.checkOfferedOrNot(course_code,email,conn);
                                     if(check[0].equals("true")){
-                                        i.removecourse(course_code);
-                                        i.removepccourse(course_code,result[0],result[1]);
+                                        i.removeSymbol(course_code);
+                                        i.removePCCourse(course_code,result[0],result[1]);
                                         System.out.println("Successfully deregistered");
                                     }else{
                                         System.out.println("Not offered");
@@ -244,12 +244,12 @@ public class App {
                                 }
                             }else if(input.equals("5")){
                                 // Validate
-                                if(i.check_elligibility("9",conn)){
+                                if(i.checkElligibility("9",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
-                                    String check[]=i.check_offered_or_not(course_code,email,conn);
+                                    String check[]=i.checkOfferedOrNot(course_code,email,conn);
                                     if(check[0].equals("true")){
-                                        i.validatecourse(course_code);
+                                        i.validateCourse(course_code);
                                         System.out.println("Successfully validated");
                                     }else{
                                         System.out.println("Not offered");
@@ -274,13 +274,13 @@ public class App {
                             input=a.display(scn);
                             if(input.equals("1")){
                                 //edit course_Catalog
-                                if(a.check_elligibility("1",conn)){
+                                if(a.checkElligibility("1",conn)){
                                     System.out.println("Press 1. for adding course, 2. for editing course");
                                     String take=scn.nextLine();
                                     if(take.equals("1")){
                                         System.out.println("Enter course_code");
                                         String input_code=scn.nextLine();
-                                        if(a.check_catalog_offered(input_code,result[0],result[1])){
+                                        if(a.checkCatalogOffered(input_code,result[0],result[1])){
                                             System.out.println("Enter L");
                                             String l=scn.nextLine();
                                             System.out.println("Enter T");
@@ -295,7 +295,7 @@ public class App {
                                             String minm_sem=scn.nextLine();
                                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)");
                                             String core_elective=scn.nextLine();
-                                            a.modifycoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"0");
+                                            a.modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"0");
                                         }else{
                                             System.out.println("Already in catalog");
                                         }
@@ -303,7 +303,7 @@ public class App {
                                     }else if(take.equals("2")){
                                         System.out.println("Enter course_code");
                                         String input_code=scn.nextLine();
-                                        if(a.check_catalog_offered(input_code, result[0], result[1])){
+                                        if(a.checkCatalogOffered(input_code, result[0], result[1])){
                                             System.out.println("Not offered");
                                         }else{
                                             System.out.println("Enter L");
@@ -320,7 +320,7 @@ public class App {
                                             String minm_sem=scn.nextLine();
                                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)(Needed)");
                                             String core_elective=scn.nextLine();
-                                            a.modifycoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"1");
+                                            a.modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"1");
                                         }
 
                                     }else{
@@ -334,12 +334,12 @@ public class App {
                                 //viewing grade
                                 System.out.println("Enter student email_id");
                                 String stu_email=scn.nextLine();
-                                if(a.check_stu_email(stu_email)){
+                                if(a.checkStudentEmail(stu_email)){
                                     System.out.println("Enter academic_year");
                                     String ac_year=scn.nextLine();
                                     System.out.println("Enter semester");
                                     String sem=scn.nextLine();
-                                    a.view_grade(stu_email,ac_year,sem);
+                                    a.viewGrade(stu_email,ac_year,sem);
                                 }else{
                                     System.out.println("No such student");
                                 }
@@ -347,8 +347,8 @@ public class App {
                                 //generating transcripts
                                 System.out.println("Enter student email_id");
                                 String stu_email=scn.nextLine();
-                                if(a.check_stu_email(stu_email)){
-                                    a.generate_transcripts(stu_email);
+                                if(a.checkStudentEmail(stu_email)){
+                                    a.generateTranscripts(stu_email);
                                     System.out.println("Transcript generated");
                                 }else{
                                     System.out.println("No such student");
@@ -366,14 +366,14 @@ public class App {
                                     String end= scn.nextLine();
                                     System.out.println("Set validation_check time");
                                     String validation_check=scn.nextLine();
-                                    a.set_grade_deadline(start,end,validation_check);
+                                    a.setGradeDeadline(start,end,validation_check);
                                 }else if(user_input.equals("1") || user_input.equals("2") || user_input.equals("3")){
                                     System.out.println("Input should be 'T' or 'F', with one 'T' at max");
                                     System.out.println("Set start time");
                                     String start = scn.nextLine();
                                     System.out.println("Set end time");
                                     String end= scn.nextLine();
-                                    a.set_rest_deadline(user_input,start,end);
+                                    a.setRestDeadline(user_input,start,end);
                                 }else{
                                     System.out.println("Wrong input");
                                 }
@@ -384,11 +384,11 @@ public class App {
                                 System.out.println("Enter semester");
                                 String sem=scn.nextLine();
                                 if(!year.equals(result[0]) || !sem.equals(result[1])){
-                                    a.updatesession(year,sem,result[0],result[1]);
+                                    a.updateSession(year,sem,result[0],result[1]);
                                     System.out.println("Succesfully updated");
                                 }
                             }else if(input.equals("6")){
-                                if(a.check_elligibility("8",conn)){
+                                if(a.checkElligibility("8",conn)){
                                     a.validate(result[0],result[1]);
                                     System.out.println("Successfully validated");
                                 }else{
