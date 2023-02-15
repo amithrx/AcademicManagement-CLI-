@@ -64,7 +64,7 @@ public class App {
                             input=s.display(scn);
                             if(input.equals("1")){
                                 //Registering a course
-                                if(s.check_elgible_for_enrolling()==true){
+                                if(s.check_elligibility("5",conn)==true){
                                     System.out.println("Enter course_code");
                                     String course_code = scn.nextLine();
                                     System.out.println("Enter instructor_id");
@@ -119,7 +119,7 @@ public class App {
 
                             }else if(input.equals("2")){
                                 //Deregistering a course
-                                if(s.check_elgible_for_enrolling()==true){
+                                if(s.check_elligibility("5",conn)==true){
                                     System.out.println("Enter course_code");
                                     String course_code = scn.nextLine();
                                     System.out.println("Enter instructor_id");
@@ -141,7 +141,7 @@ public class App {
                                         System.out.println("Course not offered");
                                     }
                                 }else{
-                                    System.out.println("Not elligible for enrolling");
+                                    System.out.println("Not elligible for de-registering a course");
                                 }      
                             }else if(input.equals("3")){
                                 // viewing grade
@@ -149,7 +149,8 @@ public class App {
                                 String academic_year = scn.nextLine();
                                 System.out.println("Enter semester");
                                 String semester = scn.nextLine();
-                                s.show_grade(academic_year,semester);
+                                System.out.println("Your grade");
+                                s.view_grade(email,academic_year,semester);
                             }else if(input.equals("4")){
                                 // calculating CGPA
                                 Float cgpa=s.calc_CGPA();
@@ -162,10 +163,13 @@ public class App {
                                 }else{
                                     System.out.println("Not elligible for graduation");
                                 }  
-                            }else{
+                            }else if(input.equals("6")){
                                 // logout
                                 s.log(1,conn,email);
                                 break;
+
+                            }else{ 
+                                System.out.println("Wrong input"); 
                             }
                         } 
                       }else if(role.equals("i")){
@@ -187,7 +191,7 @@ public class App {
                                 }   
                             }else if(input.equals("2")){
                                 //Update grade
-                                if(i.elligible_update_grade()){
+                                if(i.check_elligibility("7",conn) ||i.check_elligibility("9",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
                                     String check[]=i.check_offered_or_not(course_code,email,conn);
@@ -202,7 +206,7 @@ public class App {
                                 }
                             }else if(input.equals("3")){
                                 // Register course
-                                if(i.elligible_register_course()){
+                                if(i.check_elligibility("3",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
                                     String check[]=i.check_offered_or_not(course_code,email,conn);
@@ -224,7 +228,7 @@ public class App {
                                 }
                             }else if(input.equals("4")){
                                 // Dereigister course
-                                if(i.elligible_register_course()){
+                                if(i.check_elligibility("3",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
                                     String check[]=i.check_offered_or_not(course_code,email,conn);
@@ -240,7 +244,7 @@ public class App {
                                 }
                             }else if(input.equals("5")){
                                 // Validate
-                                if(i.elligible_validate_course()){
+                                if(i.check_elligibility("9",conn)){
                                     System.out.println("Enter course_code");
                                     String course_code=scn.nextLine();
                                     String check[]=i.check_offered_or_not(course_code,email,conn);
@@ -253,10 +257,12 @@ public class App {
                                 }else{
                                     System.out.println("Can't validate course now");
                                 }
+                            }else if(input.equals("6")){
+                                // logout
+                                i.log(1,conn,email);
+                                break;
                             }else{
-                                 // logout
-                                 i.log(1,conn,email);
-                                 break;
+                                 System.out.println("Wrong input");
                             }
                         }
                       }else{
@@ -267,7 +273,8 @@ public class App {
                         while(true){
                             input=a.display(scn);
                             if(input.equals("1")){
-                                if(a.elligible_edit_catalog()){
+                                //edit course_Catalog
+                                if(a.check_elligibility("1",conn)){
                                     System.out.println("Press 1. for adding course, 2. for editing course");
                                     String take=scn.nextLine();
                                     if(take.equals("1")){
@@ -288,12 +295,12 @@ public class App {
                                             String minm_sem=scn.nextLine();
                                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)");
                                             String core_elective=scn.nextLine();
-                                            a.addcoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective);
+                                            a.modifycoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"0");
                                         }else{
                                             System.out.println("Already in catalog");
                                         }
                                         
-                                    }else{
+                                    }else if(take.equals("2")){
                                         System.out.println("Enter course_code");
                                         String input_code=scn.nextLine();
                                         if(a.check_catalog_offered(input_code, result[0], result[1])){
@@ -313,8 +320,11 @@ public class App {
                                             String minm_sem=scn.nextLine();
                                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)(Needed)");
                                             String core_elective=scn.nextLine();
-                                            a.updatecoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective);
+                                            a.modifycoursecatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"1");
                                         }
+
+                                    }else{
+                                        System.out.println("Wrong input");
                                     }
                                 }else{
                                     System.out.println("Can't edit course catalog now");
@@ -357,13 +367,15 @@ public class App {
                                     System.out.println("Set validation_check time");
                                     String validation_check=scn.nextLine();
                                     a.set_grade_deadline(start,end,validation_check);
-                                }else{
+                                }else if(user_input.equals("1") || user_input.equals("2") || user_input.equals("3")){
                                     System.out.println("Input should be 'T' or 'F', with one 'T' at max");
                                     System.out.println("Set start time");
                                     String start = scn.nextLine();
                                     System.out.println("Set end time");
                                     String end= scn.nextLine();
                                     a.set_rest_deadline(user_input,start,end);
+                                }else{
+                                    System.out.println("Wrong input");
                                 }
                             }else if(input.equals("5")){
                                 //update current sessions
@@ -376,7 +388,7 @@ public class App {
                                     System.out.println("Succesfully updated");
                                 }
                             }else if(input.equals("6")){
-                                if(a.elligible_validate()){
+                                if(a.check_elligibility("8",conn)){
                                     a.validate(result[0],result[1]);
                                     System.out.println("Successfully validated");
                                 }else{
@@ -404,6 +416,7 @@ public class App {
                 System.exit(0);
             }
             else{
+                System.out.println("Wrong input");
             }
         }
     }

@@ -299,7 +299,9 @@ VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 -- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id) 
 -- VALUES(2023,1,'Amit Kumar','cs305','gunturi@iitrpr.ac.in');
 
-
+INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Amit kumar','A-');
+INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1072@iitrpr.ac.in','Ankit sharma','B-');
+INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Mohit kumar','B');
 
 
 

@@ -2,7 +2,11 @@ package softwareproject;
 import java.util.*;
 import java.sql.*;
 
-public class Common {
+public class Person {
+    protected String name;
+    protected String email_id;
+    protected Connection conn;
+    
     public void log(int state,Connection conn,String email_id){
         try {
             Statement statement = conn.createStatement();
@@ -13,7 +17,6 @@ public class Common {
             String query = "INSERT INTO login_logout (email_id,status) VALUES('"+email_id+"','"+status+"')";
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -31,7 +34,6 @@ public class Common {
             return values;
             // System.out.println(rs.getString(5));
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return values;
         }
@@ -54,9 +56,41 @@ public class Common {
                 return values;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return values;
+        }
+    }
+    public boolean check_elligibility(String type,Connection conn){
+        int check=Integer.parseInt(type);
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM config";
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            // System.out.println(rs.getString(5));
+            if(rs.getString(check).equals("t")){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public void view_grade(String stu_email,String academic_year,String semester){
+        try {
+            Statement statement = conn.createStatement();
+            String table_name="s_"+stu_email.substring(0,11);
+            String query = "SELECT * FROM "+table_name+" WHERE academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            ResultSet rs = statement.executeQuery(query);
+            System.out.println("Course_code   Instructor_id   Grade");
+            while(rs.next()){
+                System.out.println(rs.getString(4)+"   "+rs.getString(5)+"   "+rs.getString(6));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

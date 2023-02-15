@@ -3,17 +3,14 @@ import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-public class Admin extends Common{
-    private String name;
-    private String email_id;
-    private Connection conn;
+public class Admin extends Person{
     Admin(String name,String email_id,Connection conn){
         this.name=name;
         this.email_id=email_id;
         this.conn=conn;    
     }
+
     public String display(Scanner scn){
-        // Scanner scn = new Scanner(System.in);
         System.out.println("Press 1. for editing course_catalog");
         System.out.println("Press 2. for viewing grade");
         System.out.println("Press 3. for generating transcripts");
@@ -22,96 +19,50 @@ public class Admin extends Common{
         System.out.println("Press 6. for validating grade");
         System.out.println("Press 7. for logout");
         String input = scn.nextLine();
-        // scn.close();
         return input;
-    }
-    public boolean elligible_edit_catalog(){
-        try {
-            Statement statement = conn.createStatement();
-            String query = "SELECT * FROM config";
-            ResultSet rs = statement.executeQuery(query);
-            rs.next();
-            // System.out.println(rs.getString(5));
-            if(rs.getString(1).equals("t")){
-                return true;
-            }else{
-                return false;
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public boolean elligible_validate(){
-        try {
-            Statement statement = conn.createStatement();
-            String query = "SELECT * FROM config";
-            ResultSet rs = statement.executeQuery(query);
-            rs.next();
-            // System.out.println(rs.getString(5));
-            if(rs.getString(8).equals("t")){
-                return true;
-            }else{
-                return false;
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public void addcoursecatalog(String course_code,String l,String t,String p,
+    } 
+
+    public void modifycoursecatalog(String course_code,String l,String t,String p,
     String academic_year,String semester,String prerequisites,String branch_elligible,
-    String minm_semester,String core_elective){
+    String minm_semester,String core_elective,String type){
         String query="";
         branch_elligible="'"+branch_elligible+"'";
         branch_elligible=branch_elligible.replace(",", "','");
         core_elective="'"+core_elective+"'";
         core_elective=core_elective.replace(",", "','");
-
-        if(prerequisites.length()==0){
+        if(type.equals("0")){
+            //add course_catalog
+                if(prerequisites.length()==0){
             query = "INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective) VALUES('"+course_code+"','"+l+"','"+t+"','"+p+"','"+academic_year+"','"+semester+"',ARRAY["+branch_elligible+"],'"+minm_semester+"',ARRAY["+core_elective+"])";
         }else{
             prerequisites="'"+prerequisites+"'";
-            // System.out.println(prerequisites);
             prerequisites=prerequisites.replace(",", "','");
-            // System.out.println(prerequisites);
             query = "INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites,branch_elligible,minm_semester_elligible,core_elective) VALUES('"+course_code+"','"+l+"','"+t+"','"+p+"','"+academic_year+"','"+semester+"',ARRAY["+prerequisites+"],ARRAY["+branch_elligible+"],'"+minm_semester+"',ARRAY["+core_elective+"])";
         }  
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-    public void updatecoursecatalog(String course_code,String l,String t,String p,
-    String academic_year,String semester,String prerequisites,String branch_elligible,
-    String minm_semester,String core_elective){
-        String query="";
-        branch_elligible="'"+branch_elligible+"'";
-        branch_elligible=branch_elligible.replace(",", "','");
-        core_elective="'"+core_elective+"'";
-        core_elective=core_elective.replace(",", "','");
-        if(prerequisites.length()==0){
-            query = "UPDATE course_catalog SET L='"+l+"',T='"+t+"',P='"+p+"',branch_elligible=ARRAY["+branch_elligible+"],minm_semester_elligible='"+minm_semester+"',core_elective=ARRAY["+core_elective+"] WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
         }else{
-            prerequisites="'"+prerequisites+"'";
-            // System.out.println(prerequisites);
-            prerequisites=prerequisites.replace(",", "','");
-            // System.out.println(prerequisites);
-            query = "UPDATE course_catalog SET L='"+l+"',T='"+t+"',P='"+p+"',prerequisites=ARRAY["+prerequisites+"],branch_elligible=ARRAY["+branch_elligible+"],minm_semester_elligible='"+minm_semester+"',core_elective=ARRAY["+core_elective+"] WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
-        }  
-        try {
-            Statement statement = conn.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            //update course_catalog
+            if(prerequisites.length()==0){
+                query = "UPDATE course_catalog SET L='"+l+"',T='"+t+"',P='"+p+"',branch_elligible=ARRAY["+branch_elligible+"],minm_semester_elligible='"+minm_semester+"',core_elective=ARRAY["+core_elective+"] WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            }else{
+                prerequisites="'"+prerequisites+"'";
+                prerequisites=prerequisites.replace(",", "','");
+                query = "UPDATE course_catalog SET L='"+l+"',T='"+t+"',P='"+p+"',prerequisites=ARRAY["+prerequisites+"],branch_elligible=ARRAY["+branch_elligible+"],minm_semester_elligible='"+minm_semester+"',core_elective=ARRAY["+core_elective+"] WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
+            }  
+            try {
+                Statement statement = conn.createStatement();
+                statement.executeUpdate(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
     public boolean check_catalog_offered(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
@@ -123,11 +74,11 @@ public class Admin extends Common{
                 return true;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return true;
         }
     }
+
     public boolean check_stu_email(String stu_email){
         try {
             Statement statement = conn.createStatement();
@@ -139,26 +90,11 @@ public class Admin extends Common{
                 return false;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
     }
-    public void view_grade(String stu_email,String academic_year,String semester){
-        try {
-            Statement statement = conn.createStatement();
-            String table_name="s_"+stu_email.substring(0,11);
-            String query = "SELECT * FROM "+table_name+" WHERE academic_year='"+academic_year+"' AND semester='"+semester+"'";
-            ResultSet rs = statement.executeQuery(query);
-            System.out.println("Course_code   Instructor_id   Grade");
-            while(rs.next()){
-                System.out.println(rs.getString(4)+"   "+rs.getString(5)+"   "+rs.getString(6));
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+
     public void generate_transcripts(String stu_email){
         try {
             Statement statement = conn.createStatement();
@@ -181,10 +117,10 @@ public class Admin extends Common{
                 System.out.println("An error occurred while writing to the file: " + e.getMessage());
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
     public void set_grade_deadline(String start, String end, String validation_check){
         try {
             Statement statement = conn.createStatement();
@@ -201,10 +137,10 @@ public class Admin extends Common{
             }
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
     public void set_rest_deadline(String type, String start, String end){
         try {
             Statement statement = conn.createStatement();
@@ -240,36 +176,52 @@ public class Admin extends Common{
             }
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
     public void updatesession(String newyear,String newsem,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "UPDATE current_sessions SET academic_year='"+newyear+"',semester='"+newsem+"'";
-            // System.out.println(query);
             statement.executeUpdate(query);
             query="SELECT * FROM users WHERE role='s'";
-            // System.out.println(query);
             ResultSet rs=statement.executeQuery(query);
+
             while(rs.next()){
                 Statement statement1=conn.createStatement();
                 String table_name="s_"+rs.getString(1).substring(0,11);
+                String stu_branch=rs.getString(1).substring(4,7);
+                String whether_ce="";
                 String query1 = "SELECT * FROM "+table_name+" WHERE grade='F' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
-                // System.out.println(query1);
                 ResultSet rs1=statement1.executeQuery(query1);
+
                 while(rs1.next()){
-                    Statement statement2 = conn.createStatement();
-                    String query2 = "INSERT INTO "+table_name+" (academic_year,semester,name,course_code,instructor_id) VALUES('"+newyear+"','"+newsem+"','"+rs.getString(2)+"','"+rs1.getString(4)+"','"+rs1.getString(5)+"')";
-                    statement2.executeUpdate(query2);
-                    table_name=rs1.getString(4)+"_"+rs1.getString(5).substring(0,rs1.getString(5).indexOf("@"));
-                    query2 = "INSERT INTO "+table_name+" (email_id,name) VALUES ('"+rs.getString(1)+"','"+rs.getString(2)+"')";
-                    statement2.executeUpdate(query2);
+                    Statement statement3=conn.createStatement();
+                    String query3="SELECT * FROM course_catalog WHERE course_code='"+rs1.getString(4)+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
+                    ResultSet rs3=statement3.executeQuery(query3);
+                    rs3.next();
+                    String input_branch=rs3.getString(9).substring(1,rs.getString(9).length()-1);
+                    String branch[]=input_branch.split(",");
+                    String input_ce=rs3.getString(11).substring(1,rs.getString(11).length()-1);
+                    String ce[]=input_ce.split(",");
+                    for(int i=0;i<ce.length;++i){
+                        if(branch[i].equals(stu_branch)){
+                            whether_ce=ce[i];
+                            break;
+                        }
+                    }
+                    if(whether_ce.equals("PC")){
+                        Statement statement2 = conn.createStatement();
+                        String query2 = "INSERT INTO "+table_name+" (academic_year,semester,name,course_code,instructor_id) VALUES('"+newyear+"','"+newsem+"','"+rs.getString(2)+"','"+rs1.getString(4)+"','"+rs1.getString(5)+"')";
+                        statement2.executeUpdate(query2);
+                        table_name=rs1.getString(4)+"_"+rs1.getString(5).substring(0,rs1.getString(5).indexOf("@"));
+                        query2 = "INSERT INTO "+table_name+" (email_id,name) VALUES ('"+rs.getString(1)+"','"+rs.getString(2)+"')";
+                        statement2.executeUpdate(query2);
+                    }
                 }  
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -277,13 +229,11 @@ public class Admin extends Common{
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM users WHERE role='s'";
-            System.out.println(query);
             ResultSet rs=statement.executeQuery(query);
             while(rs.next()){
                 Statement statement1=conn.createStatement();
                 String table_name="s_"+rs.getString(1).substring(0,11);
                 String query1 = "SELECT * FROM "+table_name+" WHERE grade IS NULL AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
-                System.out.println(query1);
                 ResultSet rs1=statement1.executeQuery(query1);
                 while(rs1.next()){
                     Statement statement2 = conn.createStatement();
@@ -292,7 +242,6 @@ public class Admin extends Common{
                 }  
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
