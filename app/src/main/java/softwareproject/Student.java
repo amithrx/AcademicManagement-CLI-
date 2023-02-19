@@ -42,7 +42,6 @@ public class Student extends Person{
                 return false;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
@@ -65,7 +64,6 @@ public class Student extends Person{
                 return false;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
@@ -78,9 +76,8 @@ public class Student extends Person{
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
             String query = "SELECT * FROM "+table_name+" JOIN course_catalog ON "+table_name+".academic_year=course_catalog.academic_year AND "+table_name+".semester=course_catalog.semester AND "+table_name+".course_code=course_catalog.course_code WHERE "+table_name+".grade!='F'";
-            // System.out.println(query);
             ResultSet rs = statement.executeQuery(query);
-            // 7(grade),11(credit)
+    
             while(rs.next()){
                 credit+=Float.parseFloat(rs.getString(11));
                 if(rs.getString(6).equals("A")){
@@ -109,7 +106,6 @@ public class Student extends Person{
             else
             return cgpa/credit;
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return 0;
         }
@@ -125,7 +121,7 @@ public class Student extends Person{
             if(rs.next()){
                 String input=rs.getString(8).substring(1,rs.getString(8).length()-1);
                 int size=input.length();
-                System.out.println(rs.getString(8));
+                // System.out.println(rs.getString(8));
                 // System.out.println("size is "+size);
                 if(size==0){
                     return true;
@@ -155,7 +151,6 @@ public class Student extends Person{
                 return false;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
@@ -165,7 +160,7 @@ public class Student extends Person{
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+email_id.substring(0,11);
-            String query = "SELECT * FROM "+table_name+" JOIN course_catalog ON "+table_name+".academic_year=course_catalog.academic_year AND "+table_name+".semester=course_catalog.semester AND "+table_name+".course_code=course_catalog.course_code WHERE "+table_name+".grade!='F' AND "+table_name+".academic_year='"+academic_year+"' AND "+table_name+".semester='"+semester+"'";
+            String query = "SELECT * FROM "+table_name+" JOIN course_catalog ON "+table_name+".academic_year=course_catalog.academic_year AND "+table_name+".semester=course_catalog.semester AND "+table_name+".course_code=course_catalog.course_code WHERE "+table_name+".academic_year='"+academic_year+"' AND "+table_name+".semester='"+semester+"'";
             // System.out.println(query);
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()){
@@ -173,7 +168,6 @@ public class Student extends Person{
             }
             return credit;
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return credit;
         }
@@ -191,12 +185,11 @@ public class Student extends Person{
             }
             return credit;
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return credit;
         }
     }
-
+// TODO: testcases for this function 
     public void registerCourse(String academic_year, String semester, String course_code,String instructor_id){
         try {
             Statement statement = conn.createStatement();
@@ -220,10 +213,12 @@ public class Student extends Person{
         if(c_semester==2){
             int semester=1;
             total+=checkCurrentCredits(current_year, Integer.toString(semester));
+            // System.out.println(total);
         }else{
             int semester=2;
             int year=c_year-1;
             total+=checkCurrentCredits(Integer.toString(year), Integer.toString(semester));
+            // System.out.println(total);
         }
         //prev-prev credits
         int year=c_year-1;
@@ -257,19 +252,24 @@ public class Student extends Person{
     }
 
     public boolean checkMinRequirements(String current_year,String current_semester,String course_code,Integer semester){
+        //checking for minm semester elligibility and that branch haas been offered or not
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE academic_year='"+current_year+"' AND semester='"+current_semester+"' AND course_code='"+course_code+"'";
+            // System.out.println(query);
             ResultSet rs = statement.executeQuery(query);
             if(rs.next()){
                 if(semester>=Integer.parseInt(rs.getString(10))){
                     //check branch elligibility
+                    // System.out.println("semester_elligible");
                     String input=rs.getString(9).substring(1,rs.getString(9).length()-1);
                     String branch[]=input.split(",");
                     String stu_branch=email_id.substring(4,7);
-                    if(branch.length==0){
+                    if(branch.length==1){
+                        // System.out.println("branchlength1");
                         return true;
                     }else{
+                        // System.out.println("branchlengthmore");
                         boolean flag=false;
                         for(int i=0;i<branch.length;++i){
                             if(branch[i].equals(stu_branch)){
@@ -286,11 +286,11 @@ public class Student extends Person{
                 return false;
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;     
         }
     }
+
     public boolean checkCoreElective(String current_year,String current_semester,String course_code){
         try {
             Statement statement = conn.createStatement();
@@ -302,7 +302,7 @@ public class Student extends Person{
                 String branch[]=input_branch.split(",");
                 String ce[]=input_ce.split(",");
                 String stu_branch=email_id.substring(4,7);
-                if(branch.length==0){
+                if(branch.length==1){
                     return true;
                 }else{
                     boolean flag=false;
@@ -325,7 +325,7 @@ public class Student extends Person{
             return true;
         }
     }
-
+// TODO: Needed to be tested
     public void deRegisterCourse(String current_year,String current_semester, String course_code,String instructor_id){
         try {
             Statement statement = conn.createStatement();
@@ -389,6 +389,7 @@ public class Student extends Person{
             return true;
         }
     }
+// TODO:Needed to be tested
     public void studentOption(){
         log(0,conn,email_id);
         String[] result=current_session(conn);
@@ -413,10 +414,13 @@ public class Student extends Person{
                                 boolean check_previous=checkPrevious(result[0], result[1]);
                                 boolean check_back_previous=checkBackPrevious(result[0], result[1]);
                                 float current_registered_credits=checkCurrentCredits(result[0],result[1]);
+                                // System.out.println("current"+current_registered_credits);
                                 float course_credit=courseCredit(result[0],result[1],course_code);
-                                
+                                // System.out.println(check_back_previous);
+                                // System.out.println(check_previous);
                                 if(check_back_previous==true && check_previous==true){
                                     float earn_prev_two=(calcCreditOfPrevTwo(result[0],result[1]))/2;
+                                    System.out.println(calcCreditOfPrevTwo(result[0],result[1]));
                                     if(course_credit+current_registered_credits<=1.25*earn_prev_two){
                                         registerCourse(result[0],result[1],course_code,instructor_id);
                                         System.out.println("Succesfully enrolled");

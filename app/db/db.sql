@@ -168,14 +168,28 @@ CREATE TRIGGER create_ltpc
 
 -- INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
 -- VALUES ('cs305',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('ma202',2,0,2,2022,1,4);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs303',3,1,2,2022,2,5);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs518',2,0,2,2022,2,5);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester)
+VALUES ('hs301',3,1,0,2023,1);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
-VALUES ('cs302',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
-INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
-VALUES ('cs304',4,2,3,2023,1,ARRAY ['cs302','cs304','ge109']);
-INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective)
-VALUES ('ge109',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],7,ARRAY['PC','PE','PE']);
-INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective)
-VALUES ('cs305',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],5,ARRAY['PE','PE','PE']);
+VALUES ('cs304',3,1,2,2023,1,ARRAY ['cs303','cs201']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective,prerequisites)
+VALUES ('cs305',3,0,2,2023,1,ARRAY ['csb','mcb','chb'],6,ARRAY['PC','PE','PE'],ARRAY['cs303','cs301','cs202','cs201']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,branch_elligible,minm_semester_elligible,core_elective,prerequisites)
+VALUES ('cs306',3,1,0,2023,1,ARRAY ['csb','mcb','chb'],6,ARRAY['PC','PE','PE'],ARRAY['cs202','cs201']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cp301',0,0,6,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('ns103',0,0,2,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cp302',0,0,6,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('hs507',3,0,0,2023,1,6);
 
 
 CREATE TABLE course_offerings(
@@ -245,11 +259,21 @@ CREATE TRIGGER create_course_records
   EXECUTE PROCEDURE make_course_records();
 
 INSERT INTO course_offerings (instructor_id,course_code)
-VALUES ('gunturi@iitrpr.ac.in','cs305');
+VALUES ('amritesh@iitrpr.ac.in','hs301');
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
-VALUES ('sodhi@iitrpr.ac.in','cs301',7.2);
+VALUES ('sujata@iitrpr.ac.in','cs304',6);
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('sodhi@iitrpr.ac.in','cs305');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('anil@iitrpr.ac.in','cs306');
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
-VALUES ('rano@iitrpr.ac.in','cs304',7.2);
+VALUES ('puneet@iitrpr.ac.in','cp301',6.5);
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('nssoffice@iitrpr.ac.in','ns103');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('mukesh@iitrpr.ac.in','cp302');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('parwinder@iitrpr.ac.in','hs507');
 -- DELETE FROM course_offerings WHERE course_offerings.instructor_id = 'gunturi@iitrpr.ac.in' 
 -- AND course_offerings.course_code = 'cs301';
 
@@ -281,30 +305,27 @@ INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,c
 course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
 VALUES (false,false,false,false,false,false,false,true,false);
 
--- run update command from java
--- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
--- VALUES(2023,1,'Amit Kumar','cs305','guturi@iitrpr.ac.in','B');
--- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
--- VALUES(2023,1,'Amit Kumar','cs302','abc@iitrpr.ac.in','A-');
--- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
--- VALUES(2023,1,'Amit Kumar','ge109','saini@iitrpr.ac.in','F');
--- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
--- VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+VALUES(2022,1,'Amit Kumar','ma202','arun@iitrpr.ac.in','C');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2023,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
+VALUES(2022,2,'Amit Kumar','cs518','dhall@iitrpr.ac.in','A-');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
-VALUES(2022,1,'Amit Kumar','cs304','rano@iitrpr.ac.in','F');
--- INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id) 
--- VALUES(2023,1,'Amit Kumar','cs305','gunturi@iitrpr.ac.in');
+VALUES(2022,2,'Amit Kumar','cs303','nitin@iitrpr.ac.in','B-');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,2,'Amit Kumar','hs104','sreekumar@iitrpr.ac.in','B');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,2,'Amit Kumar','bm101','javed@iitrpr.ac.in','C-');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,2,'Amit Kumar','ge111','manignandan@iitrpr.ac.in','D');
 
-INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Amit kumar','A-');
-INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1072@iitrpr.ac.in','Ankit sharma','B-');
-INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Mohit kumar','B');
+-- INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Amit kumar','A-');
+-- INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1072@iitrpr.ac.in','Ankit sharma','B-');
+-- INSERT INTO cs305_gunturi(email_id,name,grade) VALUES('2020csb1070@iitrpr.ac.in','Mohit kumar','B');
 
 
-
+/*
+register hs507,cp301
+*/
 
 
 
