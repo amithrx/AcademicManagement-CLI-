@@ -1,8 +1,8 @@
 package softwareproject;
-import java.util.*;
+// import java.util.*;
 import java.sql.*;
 
-public class Person {
+abstract class Person {
     protected String name;
     protected String email_id;
     protected Connection conn;

@@ -181,7 +181,7 @@ VALUES ('cs305',4,2,3,2023,1,ARRAY ['csb','mcb','chb'],5,ARRAY['PE','PE','PE']);
 CREATE TABLE course_offerings(
     instructor_id VARCHAR(255) NOT NULL,
     course_code VARCHAR(255) NOT NULL,
-    cgpa_constraints FLOAT NOT NULL,
+    cgpa_constraints FLOAT default 0,
     PRIMARY KEY(instructor_id,course_code)
 );
 
@@ -244,8 +244,8 @@ CREATE TRIGGER create_course_records
   FOR EACH row
   EXECUTE PROCEDURE make_course_records();
 
-INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
-VALUES ('gunturi@iitrpr.ac.in','cs305',7.5);
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('gunturi@iitrpr.ac.in','cs305');
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
 VALUES ('sodhi@iitrpr.ac.in','cs301',7.2);
 INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)

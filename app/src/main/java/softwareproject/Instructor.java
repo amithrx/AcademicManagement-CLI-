@@ -205,6 +205,100 @@ public class Instructor extends Person{
             e.printStackTrace();
         }
     }
+    public void instructorOption(){
+        log(0,conn,email_id);
+        String[] result=current_session(conn);
+        System.out.println("Welcome "+name);
+        while(true){
+            Scanner scnI = new Scanner(System.in);
+            String inputI=display(scnI);
+            if(inputI.equals("1")){
+                // view grade
+                System.out.println("Enter course_code");
+                String course_code=scnI.nextLine();
+                String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                if(check[0].equals("true")){
+                    showCourseRecord(course_code);
+                }else{
+                    System.out.println("Course hasn't been offered");
+                }   
+            }else if(inputI.equals("2")){
+                //Update grade
+                if(checkElligibility("7",conn) ||checkElligibility("9",conn)){
+                    System.out.println("Enter course_code");
+                    String course_code=scnI.nextLine();
+                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        updateGrade(course_code);
+                        System.out.println("Successfully updated");
+                    }else{
+                        System.out.println("Course hasn't been offered");
+                    }
+                }else{
+                    System.out.println("Grade can't be updated now");
+                }
+            }else if(inputI.equals("3")){
+                // Register course
+                if(checkElligibility("3",conn)){
+                    System.out.println("Enter course_code");
+                    String course_code=scnI.nextLine();
+                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        System.out.println("Already registered");
+                    }else{
+                        if(isPresentInCatalog(result[0],result[1],course_code)){
+                            System.out.println("Enter minm CGPA (Enter 0 for no constraints)");
+                            String cgpa=scnI.nextLine();
+                            addCourse(course_code,cgpa);
+                            addPCCourse(course_code,result[0],result[1]);
+                            System.out.println("Succesfully added");
+                        }else{
+                            System.out.println("Not present in catalog");
+                        }
+                    }
+                }else{
+                    System.out.println("Can't add course now");
+                }
+            }else if(inputI.equals("4")){
+                // Dereigister course
+                if(checkElligibility("3",conn)){
+                    System.out.println("Enter course_code");
+                    String course_code=scnI.nextLine();
+                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        removeSymbol(course_code);
+                        removePCCourse(course_code,result[0],result[1]);
+                        System.out.println("Successfully deregistered");
+                    }else{
+                        System.out.println("Not offered");
+                    }
+                }else{
+                    System.out.println("Can't remove course now");
+                }
+            }else if(inputI.equals("5")){
+                // Validate
+                if(checkElligibility("9",conn)){
+                    System.out.println("Enter course_code");
+                    String course_code=scnI.nextLine();
+                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        validateCourse(course_code);
+                        System.out.println("Successfully validated");
+                    }else{
+                        System.out.println("Not offered");
+                    }
+                }else{
+                    System.out.println("Can't validate course now");
+                }
+            }else if(inputI.equals("6")){
+                // logout
+                log(1,conn,email_id);
+                break;
+            }else{
+                    System.out.println("Wrong input");
+            }
+        }
+    }
 }
 
 

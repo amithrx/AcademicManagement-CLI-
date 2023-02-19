@@ -389,4 +389,123 @@ public class Student extends Person{
             return true;
         }
     }
+    public void studentOption(){
+        log(0,conn,email_id);
+        String[] result=current_session(conn);
+        Integer current_semester=checkCurrentSemester(result[0],result[1]);
+        System.out.println("Welcome "+name);
+        while(true){
+            Scanner scnS = new Scanner(System.in);
+            String inputS=display(scnS);
+            if(inputS.equals("1")){
+                //Registering a course
+                if(checkElligibility("5",conn)==true){
+                    System.out.println("Enter course_code");
+                    String course_code = scnS.nextLine();
+                    System.out.println("Enter instructor_id");
+                    String instructor_id = scnS.nextLine();
+                    if(checkAlreadyDone(course_code)){
+                        String check[]=checkOfferedOrNot(course_code,instructor_id,conn);
+                    if(check[0].equals("true")){
+                        if(checkMinRequirements(result[0],result[1],course_code,current_semester)){
+                            if(calcCGPA()>=Float.parseFloat(check[1])){
+                                if(checkPrerequisites(course_code,result[0],result[1])){
+                                boolean check_previous=checkPrevious(result[0], result[1]);
+                                boolean check_back_previous=checkBackPrevious(result[0], result[1]);
+                                float current_registered_credits=checkCurrentCredits(result[0],result[1]);
+                                float course_credit=courseCredit(result[0],result[1],course_code);
+                                
+                                if(check_back_previous==true && check_previous==true){
+                                    float earn_prev_two=(calcCreditOfPrevTwo(result[0],result[1]))/2;
+                                    if(course_credit+current_registered_credits<=1.25*earn_prev_two){
+                                        registerCourse(result[0],result[1],course_code,instructor_id);
+                                        System.out.println("Succesfully enrolled");
+                                    }else{
+                                        System.out.println("Credit limit exceeded");
+                                    }
+                                }else{  
+                                    if(course_credit+current_registered_credits<=18){
+                                        registerCourse(result[0],result[1],course_code,instructor_id);
+                                        System.out.println("Succesfully enrolled");
+                                    }else{
+                                        System.out.println("Credit limit exceeded");
+                                    }                                 
+                                }
+                                }else{
+                                    System.out.println("Not fulfilling prerequisites");
+                                } 
+                            }else{
+                                System.out.println("Not fulfilling CGPA criteria");
+                            }
+                            
+                        }else{
+                            System.out.println("Either branch or your semester not elligible");
+                        }
+
+                        }else{
+                            System.out.println("Course not offered");
+                        }
+                    }else{
+                        System.out.println("Already enrolled");
+                    }  
+                }else{
+                    System.out.println("Not elligible for enrolling");
+                }
+
+            }else if(inputS.equals("2")){
+                //Deregistering a course
+                if(checkElligibility("5",conn)==true){
+                    System.out.println("Enter course_code");
+                    String course_code = scnS.nextLine();
+                    System.out.println("Enter instructor_id");
+                    String instructor_id = scnS.nextLine();
+                    String check[]=checkOfferedOrNot(course_code,instructor_id,conn);
+                    if(check[0].equals("true")){
+                        if(checkEnrolled(result[0],result[1],course_code)){
+                            //check for PC or PE
+                            if(checkCoreElective(result[0],result[1],course_code)){
+                                deRegisterCourse(result[0],result[1],course_code,instructor_id);
+                                System.out.println("Successfully un-enrolled");
+                            }else{
+                                System.out.println("You can't unenroll PC coures");
+                            }
+                        }else{
+                            System.out.println("Not enrolled in that course");
+                        }   
+                    }else{
+                        System.out.println("Course not offered");
+                    }
+                }else{
+                    System.out.println("Not elligible for de-registering a course");
+                }      
+            }else if(inputS.equals("3")){
+                // viewing grade
+                System.out.println("Enter Academic year");
+                String academic_year = scnS.nextLine();
+                System.out.println("Enter semester");
+                String semester = scnS.nextLine();
+                System.out.println("Your grade");
+                viewGrade(email_id,academic_year,semester);
+            }else if(inputS.equals("4")){
+                // calculating CGPA
+                Float cgpa=calcCGPA();
+                System.out.println("Your cgpa is: "+cgpa);
+
+            }else if(inputS.equals("5")){
+                // checking whether graduated or not
+                if(isGraduated()){
+                    System.out.println("Elligible for graduation");
+                }else{
+                    System.out.println("Not elligible for graduation");
+                }  
+            }else if(inputS.equals("6")){
+                // logout
+                log(1,conn,email_id);
+                break;
+
+            }else{ 
+                System.out.println("Wrong input"); 
+            }
+        } 
+    }
 }
