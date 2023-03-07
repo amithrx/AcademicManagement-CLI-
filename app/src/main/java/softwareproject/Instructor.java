@@ -5,12 +5,14 @@ import java.util.*;
 import java.io.*;
 
 public class Instructor extends Person{
+    //constructor
     Instructor(String name,String email_id,Connection conn){
         this.name=name;
         this.email_id=email_id;
         this.conn=conn;    
     }
 
+    //interface
     public String display(Scanner scn){
         System.out.println("Press 1. for viewing grade");
         System.out.println("Press 2. for updating grade");
@@ -22,7 +24,8 @@ public class Instructor extends Person{
         return input;
     }
 
-    public void showCourseRecord(String course_code){
+    //showing the records status of a given course
+    public boolean showCourseRecord(String course_code){
         try {
             Statement statement = conn.createStatement();
             String table_name=course_code+"_"+email_id.substring(0,email_id.indexOf("@"));
@@ -32,13 +35,17 @@ public class Instructor extends Person{
             while(rs.next()){
                 System.out.println(rs.getString(1)+"   "+rs.getString(2)+"   "+rs.getString(3));
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void updateGrade(String course_code){
+    //updating the gradesheets via a .txt file
+    public boolean updateGrade(String course_code){
         try {
+            // TODO: generate .csv file using showcourseRecord and then the instructor will upload marksheet
             File file = new File(
                     "C:\\softwareProject\\assets\\grade.txt");
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -62,13 +69,17 @@ public class Instructor extends Person{
                 }       
             }
             br.close();
+            return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
+    //checking whether a given course is present in catalog or not
     public boolean isPresentInCatalog(String current_year,String current_semester,String course_code){
         try {
             Statement statement = conn.createStatement();
@@ -85,27 +96,34 @@ public class Instructor extends Person{
         }
     }
 
-    public void addCourse(String course_code,String cgpa){
+    //adding a coure to the course offerings
+    public boolean addCourse(String course_code,String cgpa){
         try {
             Statement statement = conn.createStatement();
             String query = "INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints) VALUES ('"+email_id+"','"+course_code+"','"+cgpa+"')";
             statement.executeUpdate(query);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void removeSymbol(String course_code){
+    //removinga a course from the offerings
+    public boolean removeSymbol(String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "DELETE FROM course_offerings WHERE instructor_id='"+email_id+"' AND course_code='"+course_code+"'";
             statement.executeUpdate(query);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void validateCourse(String course_code){
+    //validating the grade after grade submissions end
+    public boolean validateCourse(String course_code){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM report_validator WHERE course_code='"+course_code+"' AND instructor_id='"+email_id+"'";
@@ -114,12 +132,15 @@ public class Instructor extends Person{
             while(rs.next()){
                 System.out.println(rs.getString(2));
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void addPCCourse(String course_code,String academic_year,String semester){
+    //adding a core/elective course, which if PC automatically enrolls all the student of that course
+    public boolean addPCCourse(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
@@ -158,12 +179,15 @@ public class Instructor extends Person{
                     }
                 }
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void removePCCourse(String course_code,String academic_year,String semester){
+    //removing a core course
+    public boolean removePCCourse(String course_code,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
@@ -201,42 +225,89 @@ public class Instructor extends Person{
                     }
                 }
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
-    public void instructorOption(){
+
+    //checking to view grade
+    public boolean checkViewGrade(String course_code){
+        String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                if(check[0].equals("true")){
+                    showCourseRecord(course_code);
+                    return true;
+                }else{
+                    System.out.println("Course hasn't been offered");
+                    return false;
+                } 
+    }
+
+    //checking whether instructor can able to update the grade or not
+    public boolean checkUpdateGrade(String course_code){
+        String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        updateGrade(course_code);
+                        System.out.println("Successfully updated");
+                        return true;
+                    }else{
+                        System.out.println("Course hasn't been offered");
+                        return false;
+                    }
+    }
+
+    //chekcing whether a instructor can able to derigster a course or not
+    public boolean checkDeRegisterCourse(String course_code){
+        String check[]=checkOfferedOrNot(course_code,email_id,conn);
+        String[] result=current_session(conn);
+                    if(check[0].equals("true")){
+                        removeSymbol(course_code);
+                        removePCCourse(course_code,result[0],result[1]);
+                        System.out.println("Successfully deregistered");
+                        return true;
+                    }else{
+                        System.out.println("Not offered");
+                        return false;
+                    }
+    }
+
+    //checking whether a instructor can able to validate the grade after grade submissions ends
+    public boolean checkValidate(String course_code){
+        String check[]=checkOfferedOrNot(course_code,email_id,conn);
+                    if(check[0].equals("true")){
+                        validateCourse(course_code);
+                        System.out.println("Successfully validated");
+                        return true;
+                    }else{
+                        System.out.println("Not offered");
+                        return false;
+                    }
+    }
+
+    //option available for the instructor (interface)
+    public boolean instructorOption(Scanner scnI){
         log(0,conn,email_id);
         String[] result=current_session(conn);
+        boolean output=false;
         System.out.println("Welcome "+name);
         while(true){
-            Scanner scnI = new Scanner(System.in);
             String inputI=display(scnI);
             if(inputI.equals("1")){
                 // view grade
                 System.out.println("Enter course_code");
                 String course_code=scnI.nextLine();
-                String check[]=checkOfferedOrNot(course_code,email_id,conn);
-                if(check[0].equals("true")){
-                    showCourseRecord(course_code);
-                }else{
-                    System.out.println("Course hasn't been offered");
-                }   
+                 output=checkViewGrade(course_code); 
             }else if(inputI.equals("2")){
                 //Update grade
                 if(checkElligibility("7",conn) ||checkElligibility("9",conn)){
                     System.out.println("Enter course_code");
                     String course_code=scnI.nextLine();
-                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
-                    if(check[0].equals("true")){
-                        updateGrade(course_code);
-                        System.out.println("Successfully updated");
-                    }else{
-                        System.out.println("Course hasn't been offered");
-                    }
-                }else{
-                    System.out.println("Grade can't be updated now");
+                    output= checkUpdateGrade(course_code);
                 }
+                    else{
+                        System.out.println("Grade can't be updated now");
+                    }   
             }else if(inputI.equals("3")){
                 // Register course
                 if(checkElligibility("3",conn)){
@@ -249,7 +320,7 @@ public class Instructor extends Person{
                         if(isPresentInCatalog(result[0],result[1],course_code)){
                             System.out.println("Enter minm CGPA (Enter 0 for no constraints)");
                             String cgpa=scnI.nextLine();
-                            addCourse(course_code,cgpa);
+                            output=addCourse(course_code,cgpa);
                             addPCCourse(course_code,result[0],result[1]);
                             System.out.println("Succesfully added");
                         }else{
@@ -264,14 +335,7 @@ public class Instructor extends Person{
                 if(checkElligibility("3",conn)){
                     System.out.println("Enter course_code");
                     String course_code=scnI.nextLine();
-                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
-                    if(check[0].equals("true")){
-                        removeSymbol(course_code);
-                        removePCCourse(course_code,result[0],result[1]);
-                        System.out.println("Successfully deregistered");
-                    }else{
-                        System.out.println("Not offered");
-                    }
+                    output=checkDeRegisterCourse(course_code);
                 }else{
                     System.out.println("Can't remove course now");
                 }
@@ -280,24 +344,20 @@ public class Instructor extends Person{
                 if(checkElligibility("9",conn)){
                     System.out.println("Enter course_code");
                     String course_code=scnI.nextLine();
-                    String check[]=checkOfferedOrNot(course_code,email_id,conn);
-                    if(check[0].equals("true")){
-                        validateCourse(course_code);
-                        System.out.println("Successfully validated");
-                    }else{
-                        System.out.println("Not offered");
-                    }
+                    output=checkValidate(course_code);
                 }else{
                     System.out.println("Can't validate course now");
                 }
             }else if(inputI.equals("6")){
                 // logout
                 log(1,conn,email_id);
+                // output=true;
                 break;
             }else{
                     System.out.println("Wrong input");
             }
         }
+        return output;
     }
 }
 

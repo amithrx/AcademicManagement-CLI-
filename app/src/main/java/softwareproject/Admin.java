@@ -4,12 +4,14 @@ import java.sql.*;
 import java.io.*;
 
 public class Admin extends Person{
+    //constructor for admin
     Admin(String name,String email_id,Connection conn){
         this.name=name;
         this.email_id=email_id;
         this.conn=conn;    
     }
 
+    //admin interface
     public String display(Scanner scn){
         System.out.println("Press 1. for editing course_catalog");
         System.out.println("Press 2. for viewing grade");
@@ -22,7 +24,8 @@ public class Admin extends Person{
         return input;
     } 
 
-    public void modifyCourseCatalog(String course_code,String l,String t,String p,
+    //function to modify the existing course_catalog or to add a new course catalog
+    public boolean modifyCourseCatalog(String course_code,String l,String t,String p,
     String academic_year,String semester,String prerequisites,String branch_elligible,
     String minm_semester,String core_elective,String type){
         String query="";
@@ -42,8 +45,10 @@ public class Admin extends Person{
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
         }else{
             //update course_catalog
@@ -57,13 +62,17 @@ public class Admin extends Person{
             try {
                 Statement statement = conn.createStatement();
                 statement.executeUpdate(query);
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
     }
 
+    //function to check whether a course has been present in the catalog or not for a particular academic_year and semester
     public boolean checkCatalogOffered(String course_code,String academic_year,String semester){
+        //return false when a course is in catalog else true
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM course_catalog WHERE course_code='"+course_code+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
@@ -79,6 +88,7 @@ public class Admin extends Person{
         }
     }
 
+    //function to check whether a particular email id is correct or not
     public boolean checkStudentEmail(String stu_email){
         try {
             Statement statement = conn.createStatement();
@@ -95,7 +105,9 @@ public class Admin extends Person{
         }
     }
 
-    public void generateTranscripts(String stu_email){
+    //function to generate the trascript for a particular student
+    public boolean generateTranscripts(String stu_email){
+        
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+stu_email.substring(0,11);
@@ -103,25 +115,33 @@ public class Admin extends Person{
             ResultSet rs = statement.executeQuery(query);
             File file = new File("C:\\softwareProject\\assets\\"+table_name+".txt");
             try (FileWriter writer = new FileWriter(file)) {
+                writer.write("Transcripts for studentId: "+stu_email+"\n");
+                writer.write("\n");
+                writer.write("Academic_year  Semester  Course_code  Grade");
+                writer.write("\n");
                 while (rs.next()) {
-                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                        if(i==rs.getMetaData().getColumnCount()){
-                            writer.write(rs.getString(i)+"");
-                        }else{
-                            writer.write(rs.getString(i) + ",");
-                        }
-                    }
+                    writer.write(rs.getString(1));
+                    writer.write("            ");
+                    writer.write(rs.getString(2));
+                    writer.write("          ");
+                    writer.write(rs.getString(4));
+                    writer.write("        ");
+                    writer.write(rs.getString(6));
                     writer.write("\n");
                 }
             } catch (IOException e) {
                 System.out.println("An error occurred while writing to the file: " + e.getMessage());
+                return false;
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void setGradeDeadline(String start, String end, String validation_check){
+    //function to set the deadline for grade submission and grade validation
+    public boolean setGradeDeadline(String start, String end, String validation_check){
         try {
             Statement statement = conn.createStatement();
             String query = "";
@@ -136,12 +156,15 @@ public class Admin extends Person{
                 System.out.println("Not correct format input");
             }
             statement.executeUpdate(query);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void setRestDeadline(String type, String start, String end){
+    //function to set the rest of the deadline such as course_register, course_float e.tc
+    public boolean setRestDeadline(String type, String start, String end){
         try {
             Statement statement = conn.createStatement();
             String query = "";
@@ -175,57 +198,29 @@ public class Admin extends Person{
                 System.out.println("Invalid input");
             }
             statement.executeUpdate(query);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
-
-    public void updateSession(String newyear,String newsem,String academic_year,String semester){
+    
+    //function to update the current sessions
+    public boolean updateSession(String newyear,String newsem,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "UPDATE current_sessions SET academic_year='"+newyear+"',semester='"+newsem+"'";
             statement.executeUpdate(query);
-            query="SELECT * FROM users WHERE role='s'";
-            ResultSet rs=statement.executeQuery(query);
-
-            while(rs.next()){
-                Statement statement1=conn.createStatement();
-                String table_name="s_"+rs.getString(1).substring(0,11);
-                String stu_branch=rs.getString(1).substring(4,7);
-                String whether_ce="";
-                String query1 = "SELECT * FROM "+table_name+" WHERE grade='F' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
-                ResultSet rs1=statement1.executeQuery(query1);
-
-                while(rs1.next()){
-                    Statement statement3=conn.createStatement();
-                    String query3="SELECT * FROM course_catalog WHERE course_code='"+rs1.getString(4)+"' AND academic_year='"+academic_year+"' AND semester='"+semester+"'";
-                    ResultSet rs3=statement3.executeQuery(query3);
-                    rs3.next();
-                    String input_branch=rs3.getString(9).substring(1,rs.getString(9).length()-1);
-                    String branch[]=input_branch.split(",");
-                    String input_ce=rs3.getString(11).substring(1,rs.getString(11).length()-1);
-                    String ce[]=input_ce.split(",");
-                    for(int i=0;i<ce.length;++i){
-                        if(branch[i].equals(stu_branch)){
-                            whether_ce=ce[i];
-                            break;
-                        }
-                    }
-                    if(whether_ce.equals("PC")){
-                        Statement statement2 = conn.createStatement();
-                        String query2 = "INSERT INTO "+table_name+" (academic_year,semester,name,course_code,instructor_id) VALUES('"+newyear+"','"+newsem+"','"+rs.getString(2)+"','"+rs1.getString(4)+"','"+rs1.getString(5)+"')";
-                        statement2.executeUpdate(query2);
-                        table_name=rs1.getString(4)+"_"+rs1.getString(5).substring(0,rs1.getString(5).indexOf("@"));
-                        query2 = "INSERT INTO "+table_name+" (email_id,name) VALUES ('"+rs.getString(1)+"','"+rs.getString(2)+"')";
-                        statement2.executeUpdate(query2);
-                    }
-                }  
-            }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            // System.out.println("ttt");
+            return false;
         }
     }
-    public void validate(String academic_year,String semester){
+
+    //function to validate the grade after the grade submission ends so that instructor can see if certain students gets left or not after grade submission ends
+    public boolean validate(String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM users WHERE role='s'";
@@ -237,20 +232,64 @@ public class Admin extends Person{
                 ResultSet rs1=statement1.executeQuery(query1);
                 while(rs1.next()){
                     Statement statement2 = conn.createStatement();
-                    String query2 = "INSERT INTO report_validator(course_code,student_id,instructor_id) VALUES('"+rs1.getString(4)+"','"+rs.getString(1)+"','"+rs1.getString(5)+"')";
+                    String query2 = "INSERT INTO report_validator(course_code,student_id,instructor_id) VALUES('"+rs1.getString(4)+"','"+rs.getString(1)+"','"+rs1.getString(5)+"') ON CONFLICT DO NOTHING;";
                     statement2.executeUpdate(query2);
                 }  
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
-    public void adminOption(){
+
+    //function to check for conditions whether admin will be able to generate the transcripts or not
+    public boolean checkGenerateTranscript(String stu_email){
+        if(checkStudentEmail(stu_email)){
+            generateTranscripts(stu_email);
+            System.out.println("Transcript generated");
+            return true;
+        }else{
+            System.out.println("No such student");
+            return false;
+        }
+    }
+
+    //function to check for updating the sessions, if entered input by the user is of same as or previous it gets returned without modifications
+    public boolean checkUpdateCurrentSession(String year,String sem){
+        String[] result=current_session(conn);
+        if(!year.equals(result[0])){
+            updateSession(year,sem,result[0],result[1]);
+            System.out.println("Succesfully updated");
+            return true;
+        }else if(!sem.equals(result[1])){
+            updateSession(year,sem,result[0],result[1]);
+            System.out.println("Succesfully updated");
+            return true;
+        }
+        return false;
+    }
+
+    //function to check for the admin whether he can able to validate the grade submission or not
+    public boolean checkValidate(){
+        String[] result=current_session(conn);
+        if(checkElligibility("8",conn)){
+            validate(result[0],result[1]);
+            System.out.println("Successfully validated");
+            return true;
+        }else{
+            System.out.println("Not elligible for validating");
+            return false;
+        }
+    }
+
+    //interface for admin to enter the respective input
+    public boolean adminOption(Scanner scnA){
         log(0,conn,email_id);
         String[] result=current_session(conn);
+        boolean output=false;
         System.out.println("Welcome "+name);
         while(true){
-            Scanner scnA=new Scanner(System.in);
             String inputA=display(scnA);
             if(inputA.equals("1")){
                 //edit course_Catalog
@@ -275,7 +314,7 @@ public class Admin extends Person{
                             String minm_sem=scnA.nextLine();
                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)");
                             String core_elective=scnA.nextLine();
-                            modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"0");
+                            output=modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"0");
                         }else{
                             System.out.println("Already in catalog");
                         }
@@ -300,7 +339,7 @@ public class Admin extends Person{
                             String minm_sem=scnA.nextLine();
                             System.out.println("Enter core_elective(comma separated) (PC for core and PE for elective)(Needed)");
                             String core_elective=scnA.nextLine();
-                            modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"1");
+                            output= modifyCourseCatalog(input_code,l,t,p,result[0],result[1],prerequisites,branch_elligible,minm_sem,core_elective,"1");
                         }
 
                     }else{
@@ -319,7 +358,7 @@ public class Admin extends Person{
                     String ac_year=scnA.nextLine();
                     System.out.println("Enter semester");
                     String sem=scnA.nextLine();
-                    viewGrade(stu_email,ac_year,sem);
+                    output=viewGrade(stu_email,ac_year,sem);
                 }else{
                     System.out.println("No such student");
                 }
@@ -327,13 +366,7 @@ public class Admin extends Person{
                 //generating transcripts
                 System.out.println("Enter student email_id");
                 String stu_email=scnA.nextLine();
-                if(checkStudentEmail(stu_email)){
-                    generateTranscripts(stu_email);
-                    System.out.println("Transcript generated");
-                }else{
-                    System.out.println("No such student");
-                }
-
+                output=checkGenerateTranscript(stu_email);
             }else if(inputA.equals("4")){
                 //edit deadlines
                 System.out.println("Press 1. for course_catalog, 2. for course_float, 3. for course_register, 4. for grade");
@@ -346,15 +379,32 @@ public class Admin extends Person{
                     String end= scnA.nextLine();
                     System.out.println("Set validation_check time");
                     String validation_check=scnA.nextLine();
-                    setGradeDeadline(start,end,validation_check);
-                }else if(user_input.equals("1") || user_input.equals("2") || user_input.equals("3")){
+                    output=setGradeDeadline(start,end,validation_check);
+                }else if(user_input.equals("1")){
                     System.out.println("Input should be 'T' or 'F', with one 'T' at max");
                     System.out.println("Set start time");
                     String start = scnA.nextLine();
                     System.out.println("Set end time");
                     String end= scnA.nextLine();
-                    setRestDeadline(user_input,start,end);
-                }else{
+                    output=setRestDeadline(user_input,start,end);
+                }
+                else if(user_input.equals("2")){
+                    System.out.println("Input should be 'T' or 'F', with one 'T' at max");
+                    System.out.println("Set start time");
+                    String start = scnA.nextLine();
+                    System.out.println("Set end time");
+                    String end= scnA.nextLine();
+                    output=setRestDeadline(user_input,start,end);
+                }
+                else if(user_input.equals("3")){
+                    System.out.println("Input should be 'T' or 'F', with one 'T' at max");
+                    System.out.println("Set start time");
+                    String start = scnA.nextLine();
+                    System.out.println("Set end time");
+                    String end= scnA.nextLine();
+                    output=setRestDeadline(user_input,start,end);
+                }
+                else{
                     System.out.println("Wrong input");
                 }
             }else if(inputA.equals("5")){
@@ -363,18 +413,10 @@ public class Admin extends Person{
                 String year=scnA.nextLine();
                 System.out.println("Enter semester");
                 String sem=scnA.nextLine();
-                if(!year.equals(result[0]) || !sem.equals(result[1])){
-                    updateSession(year,sem,result[0],result[1]);
-                    System.out.println("Succesfully updated");
-                }
+                output=checkUpdateCurrentSession(year, sem);
             }else if(inputA.equals("6")){
-                if(checkElligibility("8",conn)){
-                    validate(result[0],result[1]);
-                    System.out.println("Successfully validated");
-                }else{
-                    System.out.println("Not elligible for validating");
-                }
-
+                //validating grade
+                output=checkValidate();
             }else if(inputA.equals("7")){
                 log(1,conn,email_id);
                     break;
@@ -382,5 +424,6 @@ public class Admin extends Person{
             else{
             }
         }
+        return output;
     }
 }

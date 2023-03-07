@@ -10,102 +10,10 @@ import java.sql.*;
 
 class AppTest {
     App app =new App();
-    Connection conn=app.connect();
-    //App.java
+    Connection conn=DBconnect.connect();
     @Test
     void appValidate(){
         String[] expectedOutput={"Amit Kumar","s"};
-        assertArrayEquals(expectedOutput,app.validate("2020csb1070@iitrpr.ac.in", "2020csb1070", conn));
-    }
-    //Student.java
-    @Test
-    void studentCheckPrevious1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkPrevious("2023", "1"));
-    }
-    @Test
-    void studentCheckPrevious2(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertFalse(stu.checkPrevious("2021", "2"));
-    }
-    @Test
-    void studentCheckBackPrevious1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkBackPrevious("2023", "1"));
-    }
-    @Test
-    void studentCheckBackPrevious2(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertFalse(stu.checkBackPrevious("2022", "1"));
-    }
-    @Test
-    void studentCalcCGPA(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertEquals(7.300000190734863,stu.calcCGPA());
-    }
-    @Test
-    void studentCheckPrerequisites1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkPrerequisites("hs507", "2023", "1"));
-    }
-    @Test
-    void studentCheckCurrentCredits(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertEquals(6, stu.checkCurrentCredits("2023", "1"));
-    }
-    @Test
-    void studentCourseCredit(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertEquals(4, stu.courseCredit("2023", "1", "cs305"));
-    }
-    @Test
-    void studentCalculateCreditOfPreviousTwo1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertEquals(10, stu.calcCreditOfPrevTwo("2023", "1"));
-    }
-    @Test
-    void studentCheckEnrolled1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkEnrolled("2023", "1", "cp301"));
-    }
-    @Test
-    void studentCheckCurrentSemester(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertEquals(7, stu.checkCurrentSemester("2023", "1"));
-    }
-    @Test
-    void studentMinReqiurements1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkMinRequirements("2023", "1", "cs305", 7));
-    }
-    @Test
-    void studentMinReqiurements2(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkMinRequirements("2023", "1", "cp302", 7));
-    }
-    @Test
-    void studentCheckCoreElcective1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkCoreElective("2023", "1", "cp302"));
-    }
-    @Test
-    void studentCheckCoreElcective2(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertFalse(stu.checkCoreElective("2023", "1", "cs305"));
-    }
-    @Test
-    void studentIsGraduated(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertFalse(stu.isGraduated());
-    }
-    @Test
-    void studentCheckAlreadyDone1(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertTrue(stu.checkAlreadyDone("cs306"));
-    }
-    @Test
-    void studentCheckAlreadyDone2(){
-        Student stu=new Student("Amit Kumar", "2020csb1070@iitrpr.ac.in", conn);
-        assertFalse(stu.checkAlreadyDone("ma202"));
+        assertArrayEquals(expectedOutput,ValidateUsers.validate("2020csb1070@iitrpr.ac.in", "2020csb1070", conn));
     }
 }

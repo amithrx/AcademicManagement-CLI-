@@ -77,7 +77,7 @@ abstract class Person {
         }
     }
     
-    public void viewGrade(String stu_email,String academic_year,String semester){
+    public boolean viewGrade(String stu_email,String academic_year,String semester){
         try {
             Statement statement = conn.createStatement();
             String table_name="s_"+stu_email.substring(0,11);
@@ -87,8 +87,10 @@ abstract class Person {
             while(rs.next()){
                 System.out.println(rs.getString(4)+"   "+rs.getString(5)+"   "+rs.getString(6));
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

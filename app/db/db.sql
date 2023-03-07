@@ -29,7 +29,7 @@ END;
 $$;
 
 CREATE TRIGGER update_sessions_deleate_offerings
-AFTER UPDATE ON currernt_sessions
+AFTER UPDATE ON current_sessions
 FOR EACH row
   EXECUTE PROCEDURE deleate_offerings();
 -- As the academic_year or semester changes, all entries of course_offering should be deleated using the above triggers,
@@ -52,7 +52,7 @@ END;
 $$;
 
 CREATE TRIGGER update_sessions_deleate_report
-AFTER UPDATE ON currernt_sessions
+AFTER UPDATE ON current_sessions
 FOR EACH row
   EXECUTE PROCEDURE deleate_report();
 
@@ -120,9 +120,17 @@ VALUES ('2020csb1098@iitrpr.ac.in', 'Mohit Kumar', '2020csb1098', 's');
 INSERT INTO users (email_id, name, password, role)
 VALUES ('2020csb1068@iitrpr.ac.in', 'Akshat Toolaj Sinha', '2020csb1068', 's');
 INSERT INTO users (email_id, name, password, role)
+VALUES ('2023csb1070@iitrpr.ac.in', 'Arshdeep Singh', '2023csb1070', 's');
+INSERT INTO users (email_id, name, password, role)
 VALUES ('mukesh@iitrpr.ac.in', 'Mukesh Saini', 'mukesh', 'i');
 INSERT INTO users (email_id, name, password, role)
-VALUES ('gunturi@iitrpr.ac.in', 'Vishwanath Gunturi', 'gunturi', 'i');
+VALUES ('manignandan@iitrpr.ac.in', 'Manignandan', 'manignandan', 'i');
+INSERT INTO users (email_id, name, password, role)
+VALUES ('anil@iitrpr.ac.in', 'Anil Sukla', 'anil', 'i');
+INSERT INTO users (email_id, name, password, role)
+VALUES ('sashi@iitrpr.ac.in', 'Sashi Shekhar Jha', 'sashi', 'i');
+-- INSERT INTO users (email_id, name, password, role)
+-- VALUES ('gunturi@iitrpr.ac.in', 'Vishwanath Gunturi', 'gunturi', 'i');
 INSERT INTO users (email_id, name, password, role)
 VALUES ('sodhi@iitrpr.ac.in', 'Balwinder Sodhi', 'sodhi', 'i');
 INSERT INTO users (email_id, name, password, role)
@@ -142,7 +150,8 @@ CREATE TABLE course_catalog(
     minm_semester_elligible INTEGER default 1, 
     -- used for checking for PE but for PC, all student having semester=minm_semester_elligible will get enrolled
     core_elective TEXT[] default '{}',
-    PRIMARY KEY(course_code,academic_year,semester)
+    PRIMARY KEY(course_code,academic_year,semester),
+    UNIQUE (course_code)
 );
 
 CREATE OR REPLACE FUNCTION make_ltpc()
@@ -171,9 +180,19 @@ CREATE TRIGGER create_ltpc
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
 VALUES ('ma202',2,0,2,2022,1,4);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('hs202',2,0,2,2022,1,4);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('ge108',2,0,2,2022,1,4);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
 VALUES ('cs303',3,1,2,2022,2,5);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
 VALUES ('cs518',2,0,2,2022,2,5);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('hs104',2,0,2,2022,2,5);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('bm101',2,0,2,2022,2,5);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('ge111',2,0,2,2022,2,5);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester)
 VALUES ('hs301',3,1,0,2023,1);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,prerequisites)
@@ -189,14 +208,33 @@ VALUES ('ns103',0,0,2,2023,1,6);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
 VALUES ('cp302',0,0,6,2023,1,6);
 INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cp303',0,0,6,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
 VALUES ('hs507',3,0,0,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs517',3,0,0,2023,1,8);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs201',3,0,0,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs101',3,0,0,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible)
+VALUES ('cs501',3,0,0,2023,1,6);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible,branch_elligible,core_elective)
+VALUES ('cs502',3,0,0,2023,1,6,ARRAY['csb','mcb'],ARRAY['PC','PE']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible,branch_elligible,core_elective)
+VALUES ('cy111',3,0,0,2023,1,6,ARRAY['chb','ceb'],ARRAY['PC','PC']);
+INSERT INTO course_catalog(course_code,L,T,P,academic_year,semester,minm_semester_elligible,branch_elligible,core_elective)
+VALUES ('cs111',3,0,0,2023,1,6,ARRAY['csb','mcb'],ARRAY['PC','PC']);
 
 
 CREATE TABLE course_offerings(
     instructor_id VARCHAR(255) NOT NULL,
     course_code VARCHAR(255) NOT NULL,
     cgpa_constraints FLOAT default 0,
-    PRIMARY KEY(instructor_id,course_code)
+    PRIMARY KEY(instructor_id,course_code),
+    CONSTRAINT fk
+    FOREIGN KEY (course_code)
+    REFERENCES course_catalog(course_code)
 );
 
 CREATE OR REPLACE FUNCTION make_course_records()
@@ -274,6 +312,18 @@ INSERT INTO course_offerings (instructor_id,course_code)
 VALUES ('mukesh@iitrpr.ac.in','cp302');
 INSERT INTO course_offerings (instructor_id,course_code)
 VALUES ('parwinder@iitrpr.ac.in','hs507');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('dhall@iitrpr.ac.in','cs518');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('manignandan@iitrpr.ac.in','cy111');
+INSERT INTO course_offerings (instructor_id,course_code,cgpa_constraints)
+VALUES ('anil@iitrpr.ac.in','cs201',10);
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('sashi@iitrpr.ac.in','cs501');
+-- INSERT INTO course_offerings (instructor_id,course_code)
+-- VALUES ('sashi@iitrpr.ac.in','cs502');
+INSERT INTO course_offerings (instructor_id,course_code)
+VALUES ('sashi@iitrpr.ac.in','cs111');
 -- DELETE FROM course_offerings WHERE course_offerings.instructor_id = 'gunturi@iitrpr.ac.in' 
 -- AND course_offerings.course_code = 'cs301';
 
@@ -303,10 +353,14 @@ CREATE TABLE config(
 
 INSERT INTO config (course_catalog_start,course_catalog_end,course_float_start,course_float_end,
 course_register_start,course_register_end,grade_start,grade_end,validation_check_end) 
-VALUES (false,false,false,false,false,false,false,true,false);
+VALUES (false,false,false,false,true,false,false,false,false);
 
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,1,'Amit Kumar','ma202','arun@iitrpr.ac.in','C');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','hs202','kamal@iitrpr.ac.in','A');
+INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
+VALUES(2022,1,'Amit Kumar','ge108','devarshi@iitrpr.ac.in','A-');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
 VALUES(2022,2,'Amit Kumar','cs518','dhall@iitrpr.ac.in','A-');
 INSERT INTO s_2020csb1070(academic_year,semester,name,course_code,instructor_id,grade)
@@ -324,7 +378,7 @@ VALUES(2022,2,'Amit Kumar','ge111','manignandan@iitrpr.ac.in','D');
 
 
 /*
-register hs507,cp301
+register hs507,cp301,cs111
 */
 
 

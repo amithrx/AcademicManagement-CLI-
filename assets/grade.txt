@@ -1,4 +1,3 @@
 2020csb1070@iitrpr.ac.in,Amit kumar,B
 2020csb1072@iitrpr.ac.in,Ankit sharma,A-
-2020csb1070@iitrpr.ac.in,Mohit kumar,B
 #

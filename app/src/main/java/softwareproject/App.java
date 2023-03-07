@@ -10,43 +10,10 @@ import java.sql.*;
 import java.util.*;
 
 public class App {
-    
-    private final String url = "jdbc:postgresql://localhost/miniproject";
-    private final String user = "postgres";
-    private final String password = "Amit@7870";
-    public Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connected to the PostgreSQL server successfully.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
-    }
-    public String[] validate(String email_id,String password,Connection conn){
-        String values[]=new String[2]; //name,role
-        values[0]="";
-        values[1]="";
-        try (Statement statement = conn.createStatement()) {
-            String query = "SELECT * FROM users WHERE email_id='"+email_id+"' AND password='"+password+"' ";
-            ResultSet rs = statement.executeQuery(query);
-            if(rs.next()){
-                values[0]=rs.getString(2);
-                values[1]=rs.getString(4);
-                return values;
-            }else{
-                return values;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return values;
-        }
-    }
     public static void main(String[] args) {
-        App app= new App();
-        Connection conn = app.connect();
+        // App app= new App();
+        Connection conn = DBconnect.connect();
+        //interface
         while(true){
           System.out.println("!!!<-- Welcome user -->!!!");
           System.out.println("Press 1. for Login");
@@ -58,19 +25,22 @@ public class App {
               String email = scn.nextLine();
               System.out.println("Enter Password");
               String pass = scn.nextLine();
-              String[] userCredentials=app.validate(email,pass,conn);
+              String[] userCredentials=ValidateUsers.validate(email,pass,conn);
                   if(!userCredentials[0].equals("")){   
                       String name=userCredentials[0];
                       String role=userCredentials[1];
                       if(role.equals("s")){
+                        //student interface
                         Student s = new Student(name,email,conn);
-                        s.studentOption();
+                        s.studentOption(scn);
                       }else if(role.equals("i")){
+                        //instructor interface
                         Instructor i = new Instructor(name,email,conn);
-                        i.instructorOption();
+                        i.instructorOption(scn);
                       }else{
+                        //admin interface
                         Admin a = new Admin(name,email,conn);
-                        a.adminOption();
+                        a.adminOption(scn);
                       }
                   }else{
                       System.out.println("Credential invalid");
