@@ -52,18 +52,19 @@ The workspace contains following folders, where:
 ### for starting postgres server :
 - Open the ubuntu terminal and enter into db folder
 - then run the following command:
-``` ./startPostgres.sh 
+```
+./startPostgres.sh 
 ``` 
  - run the following command to create and connect to the database:
- ```\i cleardb.sql
  ```
- ```\i db.sql
+\i cleardb.sql
+\i db.sql
  ```
 - In the second window terminal you will need to run the app.java file
 
 ## Steps to build the test :
 - Open the window terminal and enter the following command :
-```./gradlew.bat build
 ```
-```./gradlew.bat jacocoTestReport  
+./gradlew.bat build
+./gradlew.bat jacocoTestReport  
 ```
