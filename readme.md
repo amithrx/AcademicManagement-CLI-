@@ -46,7 +46,7 @@ The workspace contains following folders, where:
 │       ├── reports
 │           ├── tests
 │               ├── test
-│                   ├── html containing test plan
+│_______________├── html containing test plan
 ```
 ## Steps to run and test :
 ### for starting postgres server :
@@ -54,6 +54,7 @@ The workspace contains following folders, where:
 - then run the following command:
 ```
 ./startPostgres.sh 
+and enter into the respective database
 ``` 
  - run the following command to create and connect to the database:
  ```
@@ -68,3 +69,7 @@ The workspace contains following folders, where:
 ./gradlew.bat build
 ./gradlew.bat jacocoTestReport  
 ```
+## Included :
+- ER diagram
+- Class diagram
+- Activity diagram
